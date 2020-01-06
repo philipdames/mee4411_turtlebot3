@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>mee4411_turtlebot3</name>
+  <version>0.0.0</version>
+  <description>
+    ROS packages to work with the Turtlebot3 in MEE4411: Introduction to Mobile Robotics at Temple Univesity
+  </description>
+
+  <maintainer email="pdames@temple.edu">Philip Dames</maintainer>
+
+  <license>LGPLv3</license>
+  
+  <author email="pdames@temple.edu">Philip Dames</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+</package>
