@@ -14,7 +14,7 @@ If you ever have a problem viewing windows, make sure that your xserver program 
 ## Code Installation instructions
 You just need to download and run the installation script using the following commands:
 ```
-wget https://raw.githubusercontent.com/philipdames/mee4411_turtlebot3/master/mee4411_core/setup/remote_pc_setup_kinetic.sh?token=AANO7NQKYFL7SQUEZUZK2526COF6U
+wget https://raw.githubusercontent.com/philipdames/mee4411_turtlebot3/master/mee4411_core/setup/remote_pc_setup_kinetic.sh?token=AANO7NRG4RSCFUOBJIDX4EK6COKV4
 chmod 755 remote_pc_setup_kinetic.sh
 bash remote_pc_setup_kinetic.sh
 ```    
@@ -35,4 +35,4 @@ Run the following command to ensure that your simulation environment is working 
 roslaunch mee4411_core mee4411_simulation.launch
 ```
 You should see the following screen appear:
-![rviz screenshot of Turtlebot3 simulation](https://raw.githubusercontent.com/philipdames/mee4411_turtlebot3/master/rviz_screenshot.PNG?token=AANO7NSX65RW2QWLZ45CQCS6COJQY)
+![rviz screenshot of Turtlebot3 simulation](https://github.com/philipdames/mee4411_turtlebot3/blob/master/rviz_screenshot.PNG)
