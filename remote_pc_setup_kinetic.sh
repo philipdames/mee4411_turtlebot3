@@ -10,11 +10,6 @@ echo "PRESS [ENTER] TO CONTINUE THE INSTALLATION"
 echo "IF YOU WANT TO CANCEL, PRESS [CTRL] + [C]"
 read
 
-# Set up the parameters relating to the x server to allow WSL to display things
-echo "[Set x server parameters in .bashrc file]"
-sh -c "echo \"export DISPLAY=:0\" >> ~/.bashrc"
-sh -c "echo \"export OPENGL_ALWAYS_INDIRECT=0\" >> ~/.bashrc"
-
 # Make sure all of the software in the Ubuntu installation is up to date before starting
 echo "[Update the package lists and upgrade them]"
 sudo apt update -y
@@ -46,8 +41,9 @@ git clone https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git
 # Install a few more libraries
 sudo apt-get install -y libarmadillo-dev libcgal-dev libcgal-qt5-dev
 # Download packages for course
-https://github.com/philipdames/mee4411_turtlebot3.git
+git clone https://github.com/philipdames/mee4411_turtlebot3.git
 # Build the packages
+source ~/.bashrc
 cd $HOME/catkin_ws
 catkin_make
 
