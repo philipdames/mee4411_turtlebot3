@@ -17,6 +17,7 @@ It will also set up your ROS workspace, configure a lot of parameters on your co
 ## Test your simulation
 Run the following command to ensure that your simulation environment is working properly. 
 ```
+source ~/.bashrc
 roslaunch mee4411_core mee4411_simulation.launch
 ```
 You should see the following screen appear:
