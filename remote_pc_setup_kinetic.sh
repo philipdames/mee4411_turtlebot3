@@ -43,7 +43,8 @@ sudo apt-get install -y libarmadillo-dev libcgal-dev libcgal-qt5-dev
 # Download packages for course
 git clone https://github.com/philipdames/mee4411_turtlebot3.git
 # Build the packages
-source ~/.bashrc
+source /opt/ros/kinetic/setup.bash
+source $HOME/catkin_ws/devel/setup.bash
 cd $HOME/catkin_ws
 catkin_make
 

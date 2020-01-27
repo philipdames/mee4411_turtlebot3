@@ -6,7 +6,7 @@ Code to use the Turtlebot3 in MEE4411: Introduction to Mobile Robotics
 
 Download and run the installation script using the following commands:
 ```
-wget https://raw.githubusercontent.com/philipdames/mee4411_turtlebot3/master/mee4411_core/setup/remote_pc_setup_kinetic.sh
+wget https://raw.githubusercontent.com/philipdames/mee4411_turtlebot3/master/remote_pc_setup_kinetic.sh
 chmod 755 remote_pc_setup_kinetic.sh
 bash remote_pc_setup_kinetic.sh
 ```    
@@ -17,6 +17,7 @@ It will also set up your ROS workspace, configure a lot of parameters on your co
 ## Test your simulation
 Run the following command to ensure that your simulation environment is working properly. 
 ```
+source ~/.bashrc
 roslaunch mee4411_core mee4411_simulation.launch
 ```
 You should see the following screen appear:
