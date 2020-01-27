@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>phase1</name>
+  <version>0.0.0</version>
+  <description>The phase1 package</description>
+
+  <maintainer email="pdames@temple.edu">pdames</maintainer>
+
+  <license>LGPLv3</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>visualization_msgs</depend>
+
+</package>

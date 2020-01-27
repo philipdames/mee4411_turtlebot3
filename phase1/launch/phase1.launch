@@ -1,0 +1,26 @@
+<launch>
+  <arg name="frame_id" default="map" 
+       doc="Name of the coordinate frame associated with the map"/>
+  <arg name="resolution" default="0.25"
+       doc="Size of the cells in the occupancy grid in meters"/>
+  <arg name="filename" default="$(find phase1)/config/map0.yaml"
+       doc="Name of the file containing the environment description"/>
+
+  <node pkg="phase1" name="env_to_occ_grid" type="env_to_occ_grid.py"
+        output="screen">
+    <param name="frame_id" value="$(arg frame_id)"/>
+    <param name="resolution" value="$(arg resolution)"/>
+    <rosparam command="load" file="$(arg filename)"/>
+  </node>
+  
+  <node pkg="phase1" name="block_vis" type="block_vis.py"
+        output="screen">
+    <param name="alpha" value="0.5"/>
+    <param name="frame_id" value="$(arg frame_id)"/>
+    <param name="resolution" value="$(arg resolution)"/>
+    <rosparam command="load" file="$(arg filename)"/>
+  </node>
+  
+  <node name="rviz" pkg="rviz" type="rviz" 
+        args="-d $(find phase1)/rviz/phase1.rviz"/>
+</launch>
