@@ -23,7 +23,7 @@ class TestMapConversions(unittest.TestCase):
         
         # Ensure that calculated outputs match desired outputs
         for i in range(0, rows.size):
-            self.assertEquals(inds[i], i, "sub (%d,%d) has the wrong index (ind %d instead of %d) in map of size %d by %d" % (rows[i], cols[i], inds[i], inds_true[i], shape[0], shape[1]))
+            self.assertEquals(inds[i], inds_true[i], "sub (%d,%d) has the wrong index (ind %d instead of %d) in map of size %d by %d" % (rows[i], cols[i], inds[i], inds_true[i], shape[0], shape[1]))
     
     ## test ind2sub
     def test_ind2sub(self):
