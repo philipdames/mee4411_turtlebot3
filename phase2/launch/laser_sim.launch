@@ -1,0 +1,43 @@
+<launch>
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="initial_pose_x" default="0.0" doc="initial x position of the robot"/>
+  <arg name="initial_pose_y" default="0.0" doc="initial y position of the robot"/>
+  <arg name="initial_pose_a" default="0.0" doc="initial angle of the robot"/>
+
+  <param name="tb3_model" value="$(arg model)"/>
+  <param name="wheel_left_joint_name" value="/ground_truth/wheel_left_joint"/>
+  <param name="wheel_right_joint_name" value="/ground_truth/wheel_right_joint"/>
+  <param name="joint_states_frame" value="/ground_truth/base_footprint"/>
+  <param name="odom_frame" value="/ground_truth/odom"/>
+  <param name="base_frame" value="/ground_truth/base_footprint"/>
+
+  <node pkg="turtlebot3_fake" type="turtlebot3_fake_node" name="turtlebot3_fake_node" output="screen">
+    <remap from="cmd_vel" to="/cmd_vel"/>
+  </node>
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+    <param name="publish_frequency" type="double" value="50.0" />
+    <param name="tf_prefix" value="ground_truth"/>
+  </node>
+  
+  <node pkg="tf" type="static_transform_publisher" name="map_odom_tf" 
+        args="$(arg initial_pose_x) $(arg initial_pose_y) 0 $(arg initial_pose_a) 0 0 /map /ground_truth/odom 100" />
+
+  <node pkg="laser_simulator" name="laser_simulator" type="laser_simulator"
+        output="screen">
+    <remap from="~map" to="/map"/>
+    <remap from="~odom" to="odom"/>
+    <remap from="~scan" to="scan"/>
+    <rosparam file="$(find laser_simulator)/config/models.yaml"/>
+    <rosparam file="$(find laser_simulator)/models/LDS_01.yaml"/>
+    <param name="frame_id" value="ground_truth/base_scan"/>
+    <param name="offset/x" value="0"/>
+    <param name="offset/y" value="0"/>
+    <param name="offset/z" value="0.0"/>
+  </node>
+
+  <node pkg="phase2" name="laser_repub" type="laser_repub.py" output="screen">
+    <remap from="~scan_out" to="/scan"/>
+  </node>
+
+</launch>
