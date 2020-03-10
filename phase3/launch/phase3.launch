@@ -1,0 +1,16 @@
+<launch>
+
+  <include file="$(find phase2)/launch/phase2.launch"/>
+  
+  <node pkg="phase3" type="pure_pursuit_node.py" name="pure_pursuit" output="screen" required="true">
+    <remap from="path" to="move_base/NavfnROS/plan"/>
+    <remap from="cmd_vel" to="~cmd_vel"/>
+    
+    <param name="lookahead"    type="double" value="5.0"   />
+    <param name="goal_margin"  type="double" value="3.0"  />
+  </node>
+  
+  <node pkg="topic_tools" type="mux" name="cmd_vel_mux" output="screen" 
+        args="cmd_vel pure_pursuit/cmd_vel move_base/cmd_vel mux:=cmd_vel"/>
+
+</launch>
