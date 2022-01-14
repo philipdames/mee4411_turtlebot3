@@ -2,7 +2,7 @@
 Code to use the Turtlebot3 in MEE4411: Introduction to Mobile Robotics
 
 ## Code Installation instructions
-**Note: This assumes you have a fresh installation of Ubuntu 18.04. If you already have a folder in your home directory called catkin_ws then you will need to rename it before running this installation script.**
+**Note: This assumes you have a fresh installation of Ubuntu 18.04. If you already have a folder in your home directory called catkin_ws then you will need to rename it before running this installation script or change the name_catkin_workspace variable in line 16 of the setup script.**
 
 Download and run the installation script using the following commands:
 ```
