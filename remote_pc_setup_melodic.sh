@@ -66,7 +66,7 @@ sudo sh -c "rosdep init"
 rosdep update
 
 # Set up the ROS catkin workspace
-if [ ! -d $HOME/$name_catkin_workspace/src ];
+if [ ! -d $HOME/$name_catkin_workspace/src ]; then
   mkdir -p $HOME/$name_catkin_workspace/src
 fi
 cd $HOME/$name_catkin_workspace
