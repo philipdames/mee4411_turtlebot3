@@ -19,6 +19,6 @@ def create_occupancy_grid(boundary, blocks, res):
     #
 
     ##### YOUR CODE STARTS HERE #####
-    
+    pass
     ##### YOUR CODE ENDS HERE   #####
 

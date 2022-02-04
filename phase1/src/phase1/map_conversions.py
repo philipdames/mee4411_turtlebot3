@@ -16,7 +16,7 @@ def sub2ind(array_shape, rows, cols):
     #
     
     ##### YOUR CODE STARTS HERE #####
-    foo = 0 # DELETE THIS (dummy line was put in so that code does not throw an error)
+    pass
     ##### YOUR CODE ENDS HERE   #####
 
 def ind2sub(array_shape, ind):
@@ -34,7 +34,7 @@ def ind2sub(array_shape, ind):
     #
     
     ##### YOUR CODE STARTS HERE #####
-    foo = 0 # DELETE THIS (dummy line was put in so that code does not throw an error)
+    pass
     ##### YOUR CODE ENDS HERE   #####
     
 def xy2sub(boundary, res, x, y):
@@ -53,7 +53,7 @@ def xy2sub(boundary, res, x, y):
     #
     
     ##### YOUR CODE STARTS HERE #####
-    foo = 0 # DELETE THIS (dummy line was put in so that code does not throw an error)
+    pass
     ##### YOUR CODE ENDS HERE   #####
     
 def sub2xy(boundary, res, rows, cols):
@@ -72,7 +72,7 @@ def sub2xy(boundary, res, rows, cols):
     #
     
     ##### YOUR CODE STARTS HERE #####
-    foo = 0 # DELETE THIS (dummy line was put in so that code does not throw an error)
+    pass
     ##### YOUR CODE ENDS HERE   #####
 
 def xy2ind(boundary, res, array_shape, x, y):

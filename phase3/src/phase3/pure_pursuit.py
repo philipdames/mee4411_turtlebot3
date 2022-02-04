@@ -3,49 +3,33 @@
 import rospy
 from nav_msgs.msg import Path
 from geometry_msgs.msg import Twist
-import tf
+import tf2_ros
 
 import numpy as np
 import threading
 
 class PurePursuit:
-    # parameters of the controller
-    lookahead = None # lookahead distance [m]
-    rate = None # rate to run controller [Hz]
-    goal_margin = None # maximum distance to goal before stopping [m]
-    
-    # parameters of the robot
-    wheel_base = None # distance between left and right wheels [m]
-    wheel_radius = None # wheel radius [m]
-    v_max = None # maximum linear velocity [m/s]
-    w_max = None # maximum angular velocity [rad/s]
-    
-    # ROS objects
-    path_sub = None # subscriber to get the global path
-    tf_listener = None # tf listener to get the pose of the robot
-    cmd_vel_pub = None # publisher to send the velocity commands
-    timer = None # timer to compute velocity commands
-    
-    # data
-    path = None # store the path to the goal
-    lock = threading.Lock() # lock to keep data thread safe
     
     # Constructor
     def __init__(self):
-        # initialize parameters
-        self.lookahead = rospy.get_param('~lookahead', 5.0)
-        self.rate = rospy.get_param('~rate', 10.)
-        self.goal_margin = rospy.get_param('~goal_margin', 3.0)
-        
-        self.wheel_base = rospy.get_param('~wheel_base', 0.16)
-        self.wheel_radius = rospy.get_param('~wheel_radius', 0.033)
-        self.v_max = rospy.get_param('~v_max', 0.22)
-        self.w_max = rospy.get_param('~w_max', 2.84)
-    
+        # Initialize controller parameters
+        self.lookahead = rospy.get_param('~lookahead', 5.0) # lookahead distance [m]
+        self.rate = rospy.get_param('~rate', 10.) # rate to run controller [Hz]
+        self.goal_margin = rospy.get_param('~goal_margin', 3.0) # maximum distance to goal before stopping [m]
+        # Initialize robot parameters
+        self.wheel_base = rospy.get_param('~wheel_base', 0.16) # distance between left and right wheels [m]
+        self.wheel_radius = rospy.get_param('~wheel_radius', 0.033) # wheel radius [m]
+        self.v_max = rospy.get_param('~v_max', 0.22) # maximum linear velocity [m/s]
+        self.w_max = rospy.get_param('~w_max', 2.84) # maximum angular velocity [rad/s]
         # Initialize ROS objects
-        self.path_sub = rospy.Subscriber('path', Path, self.path_callback)
-        self.tf_listener = tf.TransformListener()
-        self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
+        self.path_sub = rospy.Subscriber('path', Path, self.path_callback) # subscriber to get the global path
+        self.tfBuffer = tf2_ros.Buffer()
+        self.tfListener = tf2_ros.TransformListener(self.tfBuffer) # tf listener to get the pose of the robot
+        self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=10) # publisher to send the velocity commands
+        timer = None # timer to compute velocity commands
+        # Initialize data
+        path = None # store the path to the goal
+        lock = threading.Lock() # lock to keep data thread safe
     
     # Callback function for the path subscriber
     def path_callback(self, msg):
@@ -68,8 +52,8 @@ class PurePursuit:
         trans = rot = None
         # look up the current pose of the base_footprint using the tf tree
         try:
-            (trans,rot) = self.tf_listener.lookupTransform('/map', '/base_footprint', rospy.Time(0))
-        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+            (trans,rot) = self.tfBuffer.lookupTransform('/map', '/base_footprint', rospy.Time(0))
+        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
             rospy.logwarn('Could not get robot pose')
             return (np.array([np.nan, np.nan]), np.nan)
         x = np.array([trans[0], trans[1]])
