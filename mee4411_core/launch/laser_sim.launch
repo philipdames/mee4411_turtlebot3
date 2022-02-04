@@ -36,7 +36,7 @@
     <param name="offset/z" value="0.0"/>
   </node>
 
-  <node pkg="phase2" name="laser_repub" type="laser_repub.py" output="screen">
+  <node pkg="mee4411_tb3_core" name="laser_repub" type="laser_repub.py" output="screen">
     <remap from="~scan_out" to="/scan"/>
   </node>
 
