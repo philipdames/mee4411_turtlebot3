@@ -2,7 +2,7 @@
 
 # Print status message in white text on blue background
 print_status () {
-  echo "\033[37;44m$1\033[0m"
+  echo -e "\033[37;44m$1\033[0m"
 }
 
 # Function to add if no such line in file
@@ -117,7 +117,7 @@ ainsl "alias eb='nano ~/.bashrc'" ~/.bashrc
 ainsl "alias sb='source ~/.bashrc'" ~/.bashrc
 ainsl "alias gs='git status'" ~/.bashrc
 ainsl "alias gp='git pull'" ~/.bashrc
-ainsl "alias cw='cd ~/$name_catkin_workspace" ~/.bashrc
+ainsl "alias cw='cd ~/$name_catkin_workspace'" ~/.bashrc
 ainsl "alias cs='cd ~/$name_catkin_workspace/src'" ~/.bashrc
 ainsl "alias cb='cd ~/$name_catkin_workspace && catkin build'" ~/.bashrc
 
