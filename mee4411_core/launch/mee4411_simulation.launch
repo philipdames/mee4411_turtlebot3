@@ -15,7 +15,7 @@
   </node>
 
   <node pkg="map_server" name="map" type="map_server" output="screen" 
-        args="$(find mee4411_tb3_core)/maps/levine-4.yaml"/>
+        args="$(find mee4411_core)/maps/levine-4.yaml"/>
 
   <node pkg="laser_simulator" name="laser_simulator" type="laser_simulator"
         output="screen">
@@ -33,6 +33,6 @@
   <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster" 
         args="0 0 0 0 0 0 1 /map /odom 100" />
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mee4411_tb3_core)/rviz/mee4411.rviz"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mee4411_core)/rviz/mee4411.rviz"/>
 
 </launch>

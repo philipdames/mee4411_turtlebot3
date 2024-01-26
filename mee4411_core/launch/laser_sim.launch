@@ -5,6 +5,11 @@
   <arg name="initial_pose_a" default="0.0" doc="initial angle of the robot"/>
 
   <param name="tb3_model" value="$(arg model)"/>
+  
+  <include file="$(find turtlebot3_bringup)/launch/includes/description.launch.xml">
+    <arg name="model" value="$(arg model)" />
+  </include>
+
   <param name="wheel_left_joint_name" value="/ground_truth/wheel_left_joint"/>
   <param name="wheel_right_joint_name" value="/ground_truth/wheel_right_joint"/>
   <param name="joint_states_frame" value="/ground_truth/base_footprint"/>
@@ -36,7 +41,7 @@
     <param name="offset/z" value="0.0"/>
   </node>
 
-  <node pkg="mee4411_tb3_core" name="laser_repub" type="laser_repub.py" output="screen">
+  <node pkg="mee4411_core" name="laser_repub" type="laser_repub.py" output="screen">
     <remap from="~scan_out" to="/scan"/>
   </node>
 
