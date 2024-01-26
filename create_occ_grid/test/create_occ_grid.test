@@ -1,0 +1,3 @@
+<launch>
+  <test test-name="map_conversions" pkg="create_occ_grid" type="test_map_conversions.py"/>
+</launch>

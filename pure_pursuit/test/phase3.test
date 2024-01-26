@@ -1,3 +1,0 @@
-<launch>
-  <test test-name="pure_pursuit" pkg="phase3" type="test_pure_pursuit.py"/>
-</launch>

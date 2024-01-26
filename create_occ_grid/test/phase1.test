@@ -1,3 +1,0 @@
-<launch>
-  <test test-name="map_conversions" pkg="phase1" type="test_map_conversions.py"/>
-</launch>

@@ -1,6 +1,6 @@
 <launch>
 
-  <include file="$(find mee4411_tb3_core)/launch/phase2.launch"/>
+  <include file="$(find mee4411_core)/launch/phase2.launch"/>
   
   <node pkg="pure_pursuit" type="pure_pursuit_node.py" name="pure_pursuit" output="screen" required="true">
     <remap from="path" to="move_base/NavfnROS/plan"/>
