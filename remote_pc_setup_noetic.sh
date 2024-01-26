@@ -88,8 +88,11 @@ sudo apt install -y ros-noetic-joy \
 print_status "[Install Turtlebot3 ROS packages]"
 sudo apt install -y ros-noetic-dynamixel-sdk ros-noetic-turtlebot3-msgs ros-noetic-turtlebot3 ros-noetic-turtlebot3-simulations
 
-print_status "[Install catkin_tools]"
-sudo apt install -y python3-catkin-tools
+print_status "[Install catkin_tools and other tools]"
+sudo apt install -y python3-catkin-tools \
+  libgcal-dev \
+  libarmadillo-dev \
+  liblapack-dev
 
 print_status "[Environment setup and getting rosinstall]"
 source /opt/ros/$name_ros_version/setup.sh
