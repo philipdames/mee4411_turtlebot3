@@ -1,34 +1,36 @@
 <launch>
-  <node pkg="map_server" 
-	name="map" 
-	type="map_server" 
-	output="screen" 
-	args="$(find scarab)/maps/levine_towne_map.yaml"/>
 
-    <node pkg="kinematic_sim" 
-          type="kinematic_sim" 
-          name="KinematicSim"
-          output="screen" 
-          respawn="false">
-    <param name="publish_freq" value="100"/>
-    <param name="num_agents" value="1"/>
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
 
-    <param name="agent0" value="scarab1"/> 
-    <param name="initial0" value="-7.4 4.4 0.00"/>
+  <param name="tb3_model" value="$(arg model)"/>
+
+  <include file="$(find turtlebot3_bringup)/launch/includes/description.launch.xml">
+    <arg name="model" value="$(arg model)" />
+  </include>
+
+  <node pkg="turtlebot3_fake" type="turtlebot3_fake_node" name="turtlebot3_fake_node" output="screen" />
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+    <param name="publish_frequency" type="double" value="50.0" />
   </node>
+
+  <node pkg="map_server" name="map" type="map_server" output="screen" 
+	      args="$(find mee4411_core)/maps/levine-4.yaml"/>
+
+  <node name="transformer" pkg="tf" type="static_transform_publisher"
+        args="1.5 11.6 0.0 0 0 0 /map /odom 10" />
 
   <node pkg="laser_simulator" name="laser_simulator" type="laser_simulator"
         output="screen">
     <remap from="~map" to="/map"/>
-    <remap from="~odom" to="/scarab1/odom"/>
+    <remap from="~odom" to="odom"/>
+    <remap from="~scan" to="scan"/>
+    <param name="frame_id" value="base_scan" />
     <!-- <remap from="~odom_array" to="/aggregator/odom_array"/> -->
     <rosparam file="$(find laser_simulator)/config/models.yaml"/>
-    <rosparam file="$(find laser_simulator)/models/UTM_30.yaml"/>
-    <param name="offset/x" value="0"/>
-    <param name="offset/y" value="0"/>
-    <param name="offset/z" value="0.2"/>
+    <rosparam file="$(find laser_simulator)/models/LDS_01.yaml"/>
   </node>
 
-  <node name="transformer" pkg="tf" type="static_transform_publisher"
-        args="0 0 0.2 0 0 0 /scarab1/base laser 10" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find laser_simulator)/rviz/laser_sim_test.rviz"/>
+
 </launch>

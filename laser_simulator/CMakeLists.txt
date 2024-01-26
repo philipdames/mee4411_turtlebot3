@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(laser_simulator)
 
 # set default build type
@@ -6,7 +6,7 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-add_compile_options(-std=c++11)
+add_compile_options(-std=c++14)
 set(CMAKE_CXX_FLAGS "-frounding-math ${CMAKE_CXX_FLAGS}")
 
 find_package(catkin REQUIRED
