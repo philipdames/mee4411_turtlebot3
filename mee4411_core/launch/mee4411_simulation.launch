@@ -1,6 +1,8 @@
 <launch>
-  <!--include file="$(find turtlebot3_fake)/launch/turtlebot3_fake.launch"/-->
   <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="initial_pose_x" default="0.0" doc="initial x position of the robot"/>
+  <arg name="initial_pose_y" default="0.0" doc="initial y position of the robot"/>
+  <arg name="initial_pose_a" default="0.0" doc="initial angle of the robot"/>
 
   <param name="tb3_model" value="$(arg model)"/>
 
@@ -17,21 +19,16 @@
   <node pkg="map_server" name="map" type="map_server" output="screen" 
         args="$(find mee4411_core)/maps/levine-4.yaml"/>
 
-  <node pkg="laser_simulator" name="laser_simulator" type="laser_simulator"
-        output="screen">
-    <remap from="~map" to="/map"/>
-    <remap from="~odom" to="odom"/>
-    <remap from="~scan" to="scan"/>
-    <rosparam file="$(find laser_simulator)/config/models.yaml"/>
-    <rosparam file="$(find laser_simulator)/models/LDS_01.yaml"/>
-    <param name="frame_id" value="base_scan"/>
-    <param name="offset/x" value="0"/>
-    <param name="offset/y" value="0"/>
-    <param name="offset/z" value="0.0"/>
-  </node>
+  <include file="$(find mee4411_core)/launch/laser_simulator.launch" ns="ground_truth">
+    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+  </include>
 
+  <!-- REMOVE THIS NODE -->
   <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster" 
         args="0 0 0 0 0 0 1 /map /odom 100" />
+  <!-- STOP EDITS HERE -->
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mee4411_core)/rviz/mee4411.rviz"/>
 
