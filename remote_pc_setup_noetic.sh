@@ -90,7 +90,7 @@ sudo apt install -y ros-noetic-dynamixel-sdk ros-noetic-turtlebot3-msgs ros-noet
 
 print_status "[Install catkin_tools and other tools]"
 sudo apt install -y python3-catkin-tools \
-  libgcal-dev \
+  libcgal-dev \
   libarmadillo-dev \
   liblapack-dev
 
