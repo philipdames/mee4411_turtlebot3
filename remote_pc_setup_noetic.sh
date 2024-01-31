@@ -130,5 +130,7 @@ ainsl "source ~/$name_catkin_workspace/devel/setup.bash" ~/.bashrc
 ainsl "export ROS_MASTER_URI=http://localhost:11311" ~/.bashrc
 ainsl "export ROS_HOSTNAME=localhost" ~/.bashrc
 
+ainsl "export TURTLEBOT3_MODEL=burger" ~/.bashrc
+
 print_status "[Complete!!!]"
 exit 0
