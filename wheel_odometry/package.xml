@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>wheel_odometry</name>
+  <version>0.0.0</version>
+  <description>The wheel_odometry package</description>
+
+  <maintainer email="pdames@temple.edu">Philip Dames</maintainer>
+
+  <license>LGPLv3</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>rospy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf2_ros</depend>
+
+  <exec_depend>python-numpy</exec_depend>
+
+</package>
