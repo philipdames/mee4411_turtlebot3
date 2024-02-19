@@ -74,6 +74,7 @@ def block_vis():
         m.pose.position.x = (b[0]+b[2])/2.
         m.pose.position.y = (b[1]+b[3])/2.
         m.pose.position.z = height/2.
+        m.pose.orientation.w = 1.
         m.scale.x = b[2] - b[0]
         m.scale.y = b[3] - b[1]
         m.scale.z = height
