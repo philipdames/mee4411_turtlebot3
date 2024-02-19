@@ -1,8 +1,16 @@
 <launch>
-  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
-  <arg name="initial_pose_x" default="0.0" doc="initial x position of the robot"/>
-  <arg name="initial_pose_y" default="0.0" doc="initial y position of the robot"/>
-  <arg name="initial_pose_a" default="0.0" doc="initial angle of the robot"/>
+  <arg name="model"           default="$(env TURTLEBOT3_MODEL)" 
+       doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="initial_pose_x"  default="0.0" 
+       doc="initial x position of the robot"/>
+  <arg name="initial_pose_y"  default="0.0" 
+       doc="initial y position of the robot"/>
+  <arg name="initial_pose_a"  default="0.0" 
+       doc="initial angle of the robot"/>
+  <arg name="joint_noise_std" default="0.0" 
+       doc="standard deviation of wheel noise per second"/>
+  <arg name="sim_namespace"   default="ground_truth" 
+       doc="namespace for `real` simulated robot" />
 
   <param name="tb3_model" value="$(arg model)"/>
 
@@ -11,7 +19,7 @@
   </include>
 
   <node pkg="turtlebot3_fake" type="turtlebot3_fake_node" name="turtlebot3_fake_node" output="screen" />
-
+  
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
     <param name="publish_frequency" type="double" value="50.0" />
   </node>
@@ -19,15 +27,17 @@
   <node pkg="map_server" name="map" type="map_server" output="screen" 
         args="$(find mee4411_core)/maps/levine-4.yaml"/>
 
-  <include file="$(find mee4411_core)/launch/laser_simulator.launch" ns="ground_truth">
-    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
-    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
-    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+  <include file="$(find mee4411_core)/launch/laser_simulator.launch" ns="$(arg sim_namespace)">
+    <arg name="sim_namespace"   value="$(arg sim_namespace)" />
+    <arg name="initial_pose_x"  value="$(arg initial_pose_x)" />
+    <arg name="initial_pose_y"  value="$(arg initial_pose_y)" />
+    <arg name="initial_pose_a"  value="$(arg initial_pose_a)" />
+    <arg name="joint_noise_std" value="$(arg joint_noise_std)" />
   </include>
 
   <!-- REMOVE THIS NODE -->
   <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster" 
-        args="0 0 0 0 0 0 1 /map /odom 100" />
+        args="$(arg initial_pose_x) $(arg initial_pose_y) 0 $(arg initial_pose_a) 0 0 /map /odom 100" />
   <!-- STOP EDITS HERE -->
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mee4411_core)/rviz/mee4411.rviz"/>
