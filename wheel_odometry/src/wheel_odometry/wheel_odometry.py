@@ -25,40 +25,40 @@ class WheelOdometry:
         # Robot parameters
         robot_model = rospy.get_param('tb3_model', "")
         if robot_model == 'burger':
-            self.wheel_separation_ = 0.160 # [m]
-            self.turning_radius_ = 0.080 # [m]
-            self.robot_radius_ = 0.105 # [m]
+            self.wheel_separation = 0.160 # [m]
+            self.turning_radius = 0.080 # [m]
+            self.robot_radius = 0.105 # [m]
         elif robot_model == 'waffle' or robot_model == 'waffle_pi':
-            self.wheel_separation_ = 0.287 # [m]
-            self.turning_radius_ = 0.1435 # [m]
-            self.robot_radius_ = 0.220 # [m]
+            self.wheel_separation = 0.287 # [m]
+            self.turning_radius = 0.1435 # [m]
+            self.robot_radius = 0.220 # [m]
         else:
             rospy.logerr('Turtlebot3 model %s not defined', robot_model)
-        self.wheel_radius_ = 0.033 # [m]
+        self.wheel_radius = 0.033 # [m]
 
         # Joint states data
-        self.prev_joint_states_ = None
+        self.prev_joint_states = None
 
         # Odometry data
-        self.odom_ = Odometry()
-        self.odom_.header.frame_id = rospy.get_param('odom_frame', 'odom')
-        self.odom_.child_frame_id = rospy.get_param('base_frame', 'base_footprint')
-        self.odom_.pose.covariance = np.diag((0.1, 0.1, 1e6, 1e6, 1e6, 0.2)).flatten().tolist()
-        self.odom_.twist.covariance = np.diag((0.1, 0.1, 1e6, 1e6, 1e6, 0.2)).flatten().tolist()
-        self.pose_ = [0.0, 0.0, 0.0] # (x, y, theta)
+        self.odom = Odometry()
+        self.odom.header.frame_id = rospy.get_param('odom_frame', 'odom')
+        self.odom.child_frame_id = rospy.get_param('base_frame', 'base_footprint')
+        self.odom.pose.covariance = np.diag((0.1, 0.1, 1e6, 1e6, 1e6, 0.2)).flatten().tolist()
+        self.odom.twist.covariance = np.diag((0.1, 0.1, 1e6, 1e6, 1e6, 0.2)).flatten().tolist()
+        self.pose = [0.0, 0.0, 0.0] # (x, y, theta)
 
         # Publishers
-        self.odom_pub_ = rospy.Publisher('odom', Odometry, queue_size=100)
-        self.tf_broadcaster_ = tf2_ros.TransformBroadcaster()
+        self.odom_pub = rospy.Publisher('odom', Odometry, queue_size=100)
+        self.tf_broadcaster = tf2_ros.TransformBroadcaster()
 
         # Subscribers
-        self.joint_states_sub_ = rospy.Subscriber('joint_states', JointState, self.jointStatesCallback, queue_size=100)
+        self.joint_states_sub = rospy.Subscriber('joint_states', JointState, self.jointStatesCallback, queue_size=100)
     
 
     def jointStatesCallback(self, msg: JointState) -> None:
         # Check if first message received
-        if self.prev_joint_states_ is None:
-            self.prev_joint_states_ = msg
+        if self.prev_joint_states is None:
+            self.prev_joint_states = msg
             return
 
         # Update and send messages
@@ -66,12 +66,12 @@ class WheelOdometry:
         self.updateTF()
 
         # Save message
-        self.prev_joint_states_ = msg
+        self.prev_joint_states = msg
 
 
     def updateOdometry(self, new_joint_states: JointState) -> None:
         # Calculate change in wheel angles
-        # (TO DO: use new msg and self.prev_joint_states_)
+        # (TO DO: use new msg and self.prev_joint_states)
         (delta_wheel_l, delta_wheel_r, delta_time) = kn.calculate_wheel_change()
 
         # Calculate displacement 
@@ -79,11 +79,11 @@ class WheelOdometry:
         (delta_s, delta_theta) = kn.calculate_displacement()
 
         # Compute new pose
-        # (TO DO: update self.pose_ based on displacement)
-        self.pose_ = kn.calculate_pose()
+        # (TO DO: update self.pose based on displacement)
+        self.pose = kn.calculate_pose()
         # FILL THIS IN
 
-        # Update odometry (stored in self.odom_)
+        # Update odometry (stored in self.odom)
         # (TO DO: fill in self.odom_.header based on current time)
         # FILL THIS IN
 
@@ -94,7 +94,7 @@ class WheelOdometry:
         # FILL THIS IN
 
         # Publish odometry
-        self.odom_pub_.publish(self.odom_)
+        self.odom_pub_.publish(self.odom)
     
     
     def updateTF(self) -> None:
@@ -106,7 +106,7 @@ class WheelOdometry:
         # FILL THIS IN
 
         # Broadcast transform
-        self.tf_broadcaster_.sendTransform(odom_tf)
+        self.tf_broadcaster.sendTransform(odom_tf)
 
 
 if __name__ == '__main__':
