@@ -49,7 +49,9 @@ class TestKinematics(unittest.TestCase):
         delta_theta_true = np.array([-0.21949215,  1.12084592, -2.76926621,  0.11581395,  0.2334])
         
         # Calculated outputs
-        (delta_s, delta_theta) = kn.calculate_displacement(delta_wheel_l, delta_wheel_r, wheel_radius, wheel_separation)
+        delta_s = delta_theta = [None] * len(delta_wheel_l)
+        for i, (dwl, dwr, wr, ws) in enumerate(zip(delta_wheel_l, delta_wheel_r, wheel_radius, wheel_separation)):
+            (delta_s[i], delta_theta[i]) = kn.calculate_displacement(dwl, dwr, wr, ws)
         
         # Ensure that calculated outputs match desired outputs
         for ds, dt, ds_true, dt_true in zip(delta_s, delta_theta, delta_s_true, delta_theta_true):
