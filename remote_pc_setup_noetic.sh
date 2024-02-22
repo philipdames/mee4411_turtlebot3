@@ -64,7 +64,8 @@ print_status "[Install RQT & Gazebo]"
 sudo apt install -y ros-$name_ros_version-rqt-* ros-$name_ros_version-gazebo-*
 
 print_status "[Install other ROS packages]"
-sudo apt install -y ros-noetic-joy \
+sudo apt install -y \
+  ros-noetic-joy \
   ros-noetic-teleop-twist-joy \
   ros-noetic-teleop-twist-keyboard \
   ros-noetic-laser-proc \
@@ -86,17 +87,31 @@ sudo apt install -y ros-noetic-joy \
   ros-noetic-interactive-markers
 
 print_status "[Install Turtlebot3 ROS packages]"
-sudo apt install -y ros-noetic-dynamixel-sdk ros-noetic-turtlebot3-msgs ros-noetic-turtlebot3 ros-noetic-turtlebot3-simulations
+sudo apt install -y \
+  ros-noetic-dynamixel-sdk \
+  ros-noetic-turtlebot3-msgs \
+  ros-noetic-turtlebot3 \
+  ros-noetic-turtlebot3-simulations
 
 print_status "[Install catkin_tools and other tools]"
-sudo apt install -y python3-catkin-tools \
+sudo apt install -y \
+  python3-catkin-tools \
   libcgal-dev \
   libarmadillo-dev \
   liblapack-dev
 
+print_status "[Install python modules]"
+sudo apt install python3-pip
+pip install scipy==1.8 scikit-learn==1.3.2
+
 print_status "[Environment setup and getting rosinstall]"
 source /opt/ros/$name_ros_version/setup.sh
-sudo apt install -y python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
+sudo apt install -y \
+  python3-rosdep \
+  python3-rosinstall \
+  python3-rosinstall-generator \
+  python3-wstool \
+  build-essential
 
 print_status "[Install rosdep]"
 sudo apt install python3-rosdep
