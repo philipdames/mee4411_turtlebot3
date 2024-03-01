@@ -33,7 +33,7 @@ class TestKinematics(unittest.TestCase):
         
         # Ensure that calculated outputs match desired outputs
         for t, d, n in zip(data_true, data, names):
-            self.assertEquals(t, d, "Data %s has the wrong value (%.3f instead of %.3f)" % (n, d, t))
+            self.assertEqual(t, d, "Data %s has the wrong value (%.3f instead of %.3f)" % (n, d, t))
     
     
     ## test calculate_displacement
@@ -49,7 +49,8 @@ class TestKinematics(unittest.TestCase):
         delta_theta_true = np.array([-0.21949215,  1.12084592, -2.76926621,  0.11581395,  0.2334])
         
         # Calculated outputs
-        delta_s = delta_theta = [None] * len(delta_wheel_l)
+        delta_s = [None] * len(delta_wheel_l)
+        delta_theta = [None] * len(delta_wheel_l)
         for i, (dwl, dwr, wr, ws) in enumerate(zip(delta_wheel_l, delta_wheel_r, wheel_radius, wheel_separation)):
             (delta_s[i], delta_theta[i]) = kn.calculate_displacement(dwl, dwr, wr, ws)
         

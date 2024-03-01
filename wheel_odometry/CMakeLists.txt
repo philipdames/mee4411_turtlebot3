@@ -16,8 +16,8 @@ catkin_package(
 #############
 ## Install ##
 #############
-catkin_install_python(PROGRAMS
-  src/wheel_odometry/wheel_odometry.py
-  src/wheel_odometry/tb3_kinematics.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+# catkin_install_python(PROGRAMS
+#   src/wheel_odometry/wheel_odometry.py
+#   src/wheel_odometry/tb3_kinematics.py
+#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
