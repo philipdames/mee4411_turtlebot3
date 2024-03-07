@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(create_occ_grid)
 
 find_package(catkin REQUIRED COMPONENTS
@@ -6,11 +6,12 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   rospy
   std_msgs
+  tf2_ros
   visualization_msgs
 )
 
 catkin_package(
-  CATKIN_DEPENDS geometry_msgs nav_msgs rospy std_msgs visualization_msgs
+  CATKIN_DEPENDS geometry_msgs nav_msgs rospy std_msgs tf2_ros visualization_msgs
 )
 include_directories(
 # include

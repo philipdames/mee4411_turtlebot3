@@ -14,6 +14,11 @@
   <depend>nav_msgs</depend>
   <depend>rospy</depend>
   <depend>std_msgs</depend>
+  <depend>tf2_ros</depend>
   <depend>visualization_msgs</depend>
+
+  <exec_depend>python-numpy</exec_depend>
+  <exec_depend>python-networkx</exec_depend>
+  <exec_depend>python-scipy</exec_depend>
 
 </package>
