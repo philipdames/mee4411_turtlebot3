@@ -102,7 +102,10 @@ sudo apt install -y \
 
 print_status "[Install python modules]"
 sudo apt install python3-pip
-pip install scipy==1.8 scikit-learn==1.3.2
+pip install \
+  scipy==1.8 \
+  scikit-learn==1.3.2 \
+  networkx
 
 print_status "[Environment setup and getting rosinstall]"
 source /opt/ros/$name_ros_version/setup.sh
