@@ -10,6 +10,7 @@ import rospy
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped
 
+
 ## A sample python unit test
 class TestPurePursuit(unittest.TestCase):
     ## test find_closest_point
@@ -48,7 +49,7 @@ class TestPurePursuit(unittest.TestCase):
         err_msg_dist = "test point ({},{}) has the wrong distance ({} instead of {})"
         err_msg_seg = "test point ({},{}) has the wrong segment ({} instead of {})"
         for i in range(0, len(x)):
-            (pt, dist, seg) = pp.find_closest_point(x[i])
+            (pt, dist, seg) = pp.findClosestPoint(x[i])
             self.assertTrue(np.linalg.norm(pt - pts_true[i]) < 1e-6, err_msg_pt.format(x[i][0], x[i][1], pt[0], pt[1], pts_true[i][0], pts_true[i][1]))
             self.assertTrue(np.abs(dist - dists_true[i]) < 1e-6, err_msg_dist.format(x[i][0], x[i][1], dist, dists_true[i]))
             self.assertEqual(seg, segs_true[i], err_msg_seg.format(x[i][0], x[i][1], seg, segs_true[i]))
@@ -85,8 +86,8 @@ class TestPurePursuit(unittest.TestCase):
         # Ensure that calculated outputs match desired outputs
         err_msg = "test point ({},{}) has the wrong goal ({}, {}) instead of ({}, {})"
         for i in range(0, len(x)):
-            (pt, dist, seg) = pp.find_closest_point(x[i])
-            goal = pp.find_goal(x[i], pt, dist, seg)
+            (pt, dist, seg) = pp.findClosestPoint(x[i])
+            goal = pp.findGoal(x[i], pt, dist, seg)
             self.assertTrue(np.linalg.norm(goal - goals_true[i]) < 1e-6, err_msg.format(x[i][0], x[i][1], goal[0], goal[1], goals_true[i][0], goals_true[i][1]))
     
     ## test calculate_velocity
@@ -106,12 +107,12 @@ class TestPurePursuit(unittest.TestCase):
         # Ensure that calculated outputs match desired outputs
         err_msg = "test goal ({},{}) has the velocity ({}, {}) instead of ({}, {})"
         for i in range(0, len(goals)):
-            (v, w) = pp.calculate_velocity(goals[i])
+            (v, w) = pp.calculateVelocity(goals[i])
             self.assertTrue(np.abs(v - v_true[i]) < 1e-6 and np.abs(w - w_true[i]) < 1e-6, err_msg.format(goals[i][0], goals[i][1], v, w, v_true[i], w_true[i]))
     
 
 if __name__ == '__main__':
     import rostest
     rospy.init_node('test_pure_pursuit')
-    rostest.rosrun('mee4411_sandbox', 'test_pure_pursuit', TestPurePursuit)
+    rostest.rosrun('pure_pursuit', 'test_pure_pursuit', TestPurePursuit)
 
