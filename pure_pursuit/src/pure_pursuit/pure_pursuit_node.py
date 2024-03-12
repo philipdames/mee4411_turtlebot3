@@ -77,10 +77,10 @@ class PurePursuitNode(PurePursuit):
         Runs every time the timer finishes to ensure that velocity commands are sent regularly
         '''
         try:
-            # get current pose
+            # Get current pose
             (x, theta) = self.getCurrentPose()
 
-            # find the goal point
+            # Find the goal point
             with self.lock:
                 goal = self.findGoal(self.path, x)
             self.publishPurePursuitMarkers(goal)
@@ -93,11 +93,16 @@ class PurePursuitNode(PurePursuit):
         pass
         ##### YOUR CODE ENDS HERE #####
         
-        # calculate the goal velocity of the robot and send the command
+        # Calculate the goal velocity of the robot and send the command
         cmd_vel = Twist()
         (cmd_vel.linear.x, cmd_vel.angular.z) = self.calculateVelocity(goal)
         if not np.isnan(cmd_vel.linear.x) and not np.isnan(cmd_vel.angular.z): # ensure data is valid
             self.cmd_vel_pub.publish(cmd_vel)
+
+        # Stop if near goal
+        if np.linalg.norm(goal) < self.goal_margin:
+            self.timer.shutdown()
+            self.timer = None
 
 
 if __name__ == '__main__':
