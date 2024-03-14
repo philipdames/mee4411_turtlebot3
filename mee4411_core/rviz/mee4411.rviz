@@ -289,6 +289,14 @@ Visualization Manager:
       Topic: /path
       Unreliable: false
       Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: controller_marker
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -353,5 +361,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1284
-  X: 1045
-  Y: 1079
+  X: 390
+  Y: 142

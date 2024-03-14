@@ -26,7 +26,7 @@ class PurePursuitNode(PurePursuit):
         self.path_sub     = rospy.Subscriber('path', Path, self.pathCallback) # subscriber to get the global path
         self.tfBuffer     = tf2_ros.Buffer()
         self.tfListener   = tf2_ros.TransformListener(self.tfBuffer) # tf listener to get the pose of the robot
-        self.goal_vis_pub = rospy.Publisher('~goal_marker', MarkerArray, queue_size=1, latch=True)
+        self.goal_vis_pub = rospy.Publisher('controller_marker', MarkerArray, queue_size=1, latch=True)
         self.cmd_vel_pub  = rospy.Publisher('cmd_vel', Twist, queue_size=10) # publisher to send the velocity commands
         timer = None # timer to compute velocity commands
         
