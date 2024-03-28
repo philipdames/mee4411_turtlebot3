@@ -84,7 +84,7 @@ class GlobalPlanner:
 
         # Convert map to numpy array
         img = np.array(map.data, dtype=np.int8)
-        ind_unknown = np.argwhere(img == -1) # save indices of unknown cells
+        ind_unknown = img == -1 # save indices of unknown cells
 
         # Shift map values up by 1 to ensure non-negative
         img += 1 # put unknown at 0
