@@ -103,9 +103,21 @@ sudo apt install -y \
 print_status "[Install python modules]"
 sudo apt install python3-pip
 pip install \
+  networkx \
+  numpy==1.17.4 \
+  pandas==1.3 \
+  protobuf==3.19.0 \
   scipy==1.8 \
   scikit-learn==1.3.2 \
-  networkx
+  tensorboard==2.10.0 \
+  tensorboardX==2.6 \
+  tqdm
+
+pip install \
+  torch==2.2.1 \
+  torchvision==0.17.1 \
+  torchaudio==2.2.1 \
+  --index-url https://download.pytorch.org/whl/cpu
 
 print_status "[Environment setup and getting rosinstall]"
 source /opt/ros/$name_ros_version/setup.sh

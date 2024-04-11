@@ -1,0 +1,271 @@
+#!/usr/bin/env python3
+
+# import pytorch modules
+import torch
+import torch.nn as nn
+from torch.optim import Adam
+
+# visualize:
+from tensorboardX import SummaryWriter
+
+# import the model
+from dnn_model import set_seed, loadDNNParams, NavDataset, DnnNet
+
+# import modules
+import os
+import sys
+from tqdm import tqdm
+
+#-----------------------------------------------------------------------------
+#
+# global variables are listed here
+#
+#-----------------------------------------------------------------------------
+# Learning rate decay function: adjust learning rate
+def adjust_learning_rate(optimizer, base_learning_rate, epoch):
+    ##### YOUR CODE STARTS HERE #####
+    # implement your learning rate decay function:
+    # for example, you can adjust the learning rate based on the epoch
+    lr = base_learning_rate
+    pass
+    # you need to save the learning rate to the lr variable
+    ##### YOUR CODE ENDS HERE #####
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+
+# parameters: do not modify
+NUM_ARGS = 4
+
+LEARNING_RATE = "lr"
+BETAS = "betas"
+EPS = "eps"
+WEIGHT_DECAY = "weight_decay"
+
+seed = 1337
+set_seed(seed)
+
+
+# train function:
+def train(model, dataloader, dataset, device, optimizer, loss_fun, goal_input):
+    ################################## Train #####################################
+    # Set model to training mode
+    model.train()
+    running_loss = 0
+    # get the number of batches (ceiling of train_data/batch_size):
+    for batch in dataloader:
+        # collect the samples as a batch:
+        scans = batch['scan'].to(device)
+        goals = batch[goal_input].to(device)
+        velocities = batch['velocity'].to(device)
+
+        # set all gradients to 0:
+        optimizer.zero_grad()
+        
+        # feed the network the batch
+        output = model(scans, goals)
+  
+        # get the loss
+        loss = loss_fun(output, velocities)
+
+        # perform back propagation:
+        loss.backward(torch.ones_like(loss))
+        optimizer.step()
+        # multiple GPUs:
+        if torch.cuda.device_count() > 1:
+            loss = loss.mean()  
+
+        running_loss += loss.item()
+
+    train_loss = running_loss  / len(dataset) 
+
+    return train_loss
+
+# validate function:
+def validate(model, dataloader, dataset, device, loss_fun, goal_input):
+    ################################## Train #####################################
+    # set model to evaluation mode:
+    model.eval()
+    # for each batch in increments of batch size
+    running_loss = 0
+    # get the number of batches (ceiling of train_data/batch_size):
+    num_batches = int(len(dataset)/dataloader.batch_size)
+    for batch in dataloader:
+        # collect the samples as a batch:
+        scans = batch['scan'].to(device)
+        goals = batch[goal_input].to(device)
+        velocities = batch['velocity'].to(device)
+
+        # feed the network the batch
+        output = model(scans, goals)
+        # get the loss
+        loss = loss_fun(output, velocities)
+        # multiple GPUs:
+        if torch.cuda.device_count() > 1:
+            loss = loss.mean()  
+
+        running_loss += loss.item()
+
+    val_loss = running_loss  / len(dataset) 
+
+    return val_loss
+
+#------------------------------------------------------------------------------
+#
+# the main program starts here
+#
+#------------------------------------------------------------------------------
+def main(argv):
+    # ensure we have the correct amount of arguments
+    if(len(argv) != NUM_ARGS):
+        print("usage: python train.py [PARAM_FILE] [MDL_PATH] [TRAIN_PATH] [DEV_PATH]")
+        exit(-1)
+
+    # define local variables
+    param_file = argv[0]
+    mdl_path   = argv[1]
+    pTrain     = argv[2]
+    pDev       = argv[3]
+
+    # Load parameters
+    dnn_params = loadDNNParams(param_file)
+
+    # get the output directory name
+    odir = os.path.dirname(mdl_path)
+
+    # if the odir doesn't exits, we make it
+    if not os.path.exists(odir):
+        os.makedirs(odir)
+
+    # set the device to use GPU if available
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    ### train:
+    print('...Start reading data...')
+    # get array of the data
+    train_dataset = NavDataset(pTrain, 'train', \
+                               normalization_method=dnn_params['normalization_method'], \
+                               preload=dnn_params['preload_all_data'])
+    train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=dnn_params['batch_size'], \
+                                                   shuffle=True, drop_last=True, pin_memory=True)
+    
+    ### dev:
+    dev_dataset = NavDataset(pDev, 'dev', \
+                             normalization_method=dnn_params['normalization_method'], \
+                             preload=dnn_params['preload_all_data'])
+    dev_dataloader = torch.utils.data.DataLoader(dev_dataset, batch_size=dnn_params['batch_size'], \
+                                                   shuffle=True, drop_last=True, pin_memory=True)
+    print('...Finish reading data...')
+    
+    # instantiate a model
+    model = DnnNet(in_channels=1, 
+                   num_hiddens=dnn_params['num_channels'])
+
+    # moves the model to device (cpu in our case so no change)
+    model.to(device)
+
+    # set the adam optimizer parameters
+    opt_params = { LEARNING_RATE: 0.1,
+                   BETAS: (.9,0.999),
+                   EPS: 1e-08,
+                   WEIGHT_DECAY: .001 }
+
+    # set the loss and optimizer
+    loss_fun_type = dnn_params['loss_function']
+    if (loss_fun_type == 'MAE'):
+        loss_fun = nn.L1Loss(reduction='sum')
+    elif (loss_fun_type == 'MSE'):
+        loss_fun = nn.MSELoss(reduction='sum')
+    else:
+        print("Please select the available loss function: 'MAE' or 'MSE'!")
+        exit(-1)
+    loss_fun.to(device)
+
+    # create an optimizer, and pass the model params to it
+    optimizer = Adam(model.parameters(), **opt_params)
+
+    # get the number of epochs to train on
+    num_epochs = dnn_params['num_epochs']
+
+    # get the goal input data:
+    goal_input = dnn_params['goal_input']
+    
+    # if there are trained models, continue training:
+    # if os.path.exists(mdl_path):
+    #     checkpoint = torch.load(mdl_path)
+    #     model.load_state_dict(checkpoint['model'])
+    #     optimizer.load_state_dict(checkpoint['optimizer'])
+    #     start_epoch = checkpoint['epoch']
+    #     print('Load epoch {} success'.format(start_epoch))
+    # else:
+    #     start_epoch = 0
+    #     print('No trained models, restart training')
+    
+    start_epoch = 0
+    print('No trained models, restart training')
+
+    # multiple GPUs:
+    if torch.cuda.device_count() > 1:
+        print(f"Let's use 2 of total {torch.cuda.device_count()} GPUs!")
+        model = nn.DataParallel(model) #, device_ids=[0, 1])
+
+    # moves the model to device (cpu in our case so no change)
+    model.to(device)
+
+    # tensorboard writer:
+    writer = SummaryWriter('runs')
+    
+    # for each epoch
+    for epoch in (pBar := tqdm(range(start_epoch+1, num_epochs))):
+        # adjust learning rate:
+        adjust_learning_rate(optimizer, dnn_params['learning_rate'], epoch)
+        ################################## Train #####################################
+        # for each batch in increments of batch size
+        train_epoch_loss = train(
+            model, train_dataloader, train_dataset, device, optimizer, loss_fun, goal_input
+        )
+        
+        ################################## Test #####################################
+        with torch.no_grad():
+            valid_epoch_loss = validate(
+                model, dev_dataloader, dev_dataset, device, loss_fun, goal_input
+            )
+
+        # log the epoch loss
+        writer.add_scalar('training loss',
+                        train_epoch_loss,
+                        epoch)
+        writer.add_scalar('validation loss',
+                        valid_epoch_loss,
+                        epoch)
+
+        # add losses to status bar
+        pBar.set_postfix_str(f'Training loss: {train_epoch_loss:.4f}, Validation loss: {valid_epoch_loss:.4f}')
+
+        # save the model
+        if (epoch % dnn_params['checkpoint_rate'] == 0):
+            if torch.cuda.device_count() > 1: # multiple GPUS: 
+                state = {'model':model.module.state_dict(), 'optimizer':optimizer.state_dict(), 'epoch':epoch}
+            else:
+                state = {'model':model.state_dict(), 'optimizer':optimizer.state_dict(), 'epoch':epoch}
+            path=os.path.join(mdl_path, f'model{epoch}.pth')
+            torch.save(state, path)
+
+    # save the final model
+    if torch.cuda.device_count() > 1: # multiple GPUS: 
+        state = {'model':model.module.state_dict(), 'optimizer':optimizer.state_dict(), 'epoch':num_epochs}
+    else:
+        state = {'model':model.state_dict(), 'optimizer':optimizer.state_dict(), 'epoch':num_epochs}
+    path=os.path.join(mdl_path, 'model_final.pth')
+    torch.save(state, path)
+
+    return True
+#
+# end of function
+
+
+# begin gracefully
+#
+if __name__ == '__main__':
+    main(sys.argv[1:])
+#
+# end of file

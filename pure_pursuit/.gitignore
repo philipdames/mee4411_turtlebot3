@@ -1,0 +1,5 @@
+*.pth
+*.npy
+*.log
+events.out.tfevents*
+turtlebot3_dataset/

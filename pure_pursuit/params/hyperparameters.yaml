@@ -1,0 +1,37 @@
+# Choose which type of goal to drive towards
+#   options: 'final_goal', 'sub_goal'
+goal_input: 'sub_goal'
+
+# Choose number of channels in the DNN
+#   options: power of two, >= 2
+num_channels: 2
+
+# Choose method to normalize data
+#   options: standardization, min_max
+normalization_method: 'standardization'
+
+# Choose number of training epochs
+#   options: > 0
+num_epochs: 1
+
+# Choose number of samples in a training batch
+#   options: power of two, 0 < BATCH_SIZE < 2500
+batch_size: 2
+
+# Choose loss function
+#   options: MSE (mean squared error), MAE (mean absolute error)
+loss_function: 'MSE'
+
+# Choose baseline learning rate
+#   options: 0 < learning_rate < 1
+#   Note: You also need to implement the learning rate decay function
+learning_rate: 0.1
+
+# Choose how often to save the learned model (# epochs)
+#   options: >0
+checkpoint_rate: 50
+
+# Choose whether to pre-load all training data into memory or load on demand
+#   Preloading will increase speed but require more memory usage
+#   options: True, False
+preload_all_data: True
