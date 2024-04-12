@@ -102,7 +102,7 @@ def loadDNNParams(file):
     assert params['goal_input'] in ['final_goal', 'sub_goal']
 
     assert 'num_channels' in params.keys()
-    assert isinstance(params['num_channels'], int) and (params['num_channels'] >= 2) and isPowerOfTwo(params['num_channels'])
+    assert isinstance(params['num_channels'], int) and (params['num_channels'] >= 4) and isPowerOfTwo(params['num_channels'])
     
     assert 'normalization_method' in params.keys()
     assert params['normalization_method'] in ['standardization', 'min_max']

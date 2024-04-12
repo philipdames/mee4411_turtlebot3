@@ -176,7 +176,10 @@ class DNNNavigation(PurePursuit):
             except Exception as error:
                 rospy.logerr(f'Cannot find goal: {error}')
                 return
-            sub_goal = self.findGoal(self.path, x)
+            if self.params['goal_input'] == 'sub_goal':
+                sub_goal = self.findGoal(self.path, x)
+            else:
+                sub_goal = None
             final_goal = np.array([self.path.poses[-1].pose.position.x, self.path.poses[-1].pose.position.y])
         
         # Publish goal marker
