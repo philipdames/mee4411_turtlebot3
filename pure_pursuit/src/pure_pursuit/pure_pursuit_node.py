@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import rospy
-import tf
 import tf2_ros
 
 from geometry_msgs.msg import Twist
@@ -10,7 +9,6 @@ from visualization_msgs.msg import MarkerArray
 
 import numpy as np
 import threading
-from typing import Tuple, Optional
 
 from pure_pursuit import PurePursuit
 
@@ -28,11 +26,11 @@ class PurePursuitNode(PurePursuit):
         self.tfListener   = tf2_ros.TransformListener(self.tfBuffer) # tf listener to get the pose of the robot
         self.goal_vis_pub = rospy.Publisher('controller_marker', MarkerArray, queue_size=1, latch=True)
         self.cmd_vel_pub  = rospy.Publisher('cmd_vel', Twist, queue_size=10) # publisher to send the velocity commands
-        timer = None # timer to compute velocity commands
+        self.timer = None # timer to compute velocity commands
         
         # Initialize data
-        path = None # store the path to the goal
-        lock = threading.Lock() # lock to keep data thread safe
+        self.path = None # store the path to the goal
+        self.lock = threading.Lock() # lock to keep data thread safe
     
 
     def pathCallback(self, msg: Path) -> None:
@@ -62,11 +60,11 @@ class PurePursuitNode(PurePursuit):
         '''
         try:
             with self.lock:
-                trans, rot = self.tfBuffer.lookupTransform(self.path.header.frame_id, self.robot_frame_id, rospy.Time(0))
+                trans = self.tfBuffer.lookup_transform(self.path.header.frame_id, self.robot_frame_id, rospy.Time(0))
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
             raise
-        x = np.array([trans[0], trans[1]])
-        _, _, theta = tf.transformations.euler_from_quaternion(rot)
+        x = np.array([trans.transform.translation.x, trans.transform.translation.y])
+        theta = 2.0 * np.arctan2(trans.transform.rotation.z, trans.transform.rotation.w)
         rospy.logdebug("x = {}, y = {}, theta = {}".format(x[0], x[1], theta))
         
         return (x, theta)
