@@ -103,10 +103,26 @@ class PurePursuitNode(PurePursuit):
             self.timer = None
 
 
+    def publishPurePursuitMarkers(self, goal):
+        ma = MarkerArray()
+
+        # Update goal marker
+        self.goal_marker.header.frame_id = self.path.header.frame_id
+        self.goal_marker.header.stamp = rospy.Time.now()
+        self.goal_marker.pose.position.x = goal[0]
+        self.goal_marker.pose.position.y = goal[1]
+        ma.markers.append(self.goal_marker)
+        
+        # Update circle marker
+        self.circle_marker.header.stamp = rospy.Time.now()
+        ma.markers.append(self.circle_marker)
+
+        # Publish markers
+        self.goal_vis_pub.publish(ma)    
+
+
 if __name__ == '__main__':
     rospy.init_node('pure_pursuit')
-    
     pp = PurePursuitNode()
-    
     rospy.spin()
 
