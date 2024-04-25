@@ -186,8 +186,10 @@ class DNNNavigation(PurePursuit):
         self.publishPurePursuitMarkers(sub_goal if self.params['goal_input'] == 'sub_goal' else final_goal)
 
         # Put into local coordinate frame
-        sub_goal   = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]]).dot(sub_goal - x)
-        final_goal = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]]).dot(final_goal - x)   
+        if self.params['goal_input'] == 'sub_goal':
+            sub_goal   = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]]).dot(sub_goal - x)
+        else:
+            final_goal = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]]).dot(final_goal - x)   
 
         # Set velocity command
         cmd_vel = Twist()
