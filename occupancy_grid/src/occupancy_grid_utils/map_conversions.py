@@ -1,6 +1,10 @@
 import math
 import numpy as np
 
+class OccupancyGridMap:
+    def __init__(self) -> None:
+        pass
+
 def sub2ind(array_shape, rows, cols):
     # sub2ind coverts subscript (row, column) pairs into linear indices in
     # row-major order
@@ -109,6 +113,6 @@ def ind2xy(boundary, res, array_shape, ind):
     #
     
     rows, cols = ind2sub(array_shape, ind)
-    x, y = sub2xy(boundary, res, rows, col)
+    x, y = sub2xy(boundary, res, rows, cols)
     return (x, y)
 

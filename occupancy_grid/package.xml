@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>create_occ_grid</name>
+  <name>occupancy_grid</name>
   <version>0.0.0</version>
-  <description>The create_occ_grid package</description>
+  <description>The occupancy_grid package</description>
 
   <maintainer email="pdames@temple.edu">pdames</maintainer>
 
@@ -12,13 +12,15 @@
   
   <depend>geometry_msgs</depend>
   <depend>nav_msgs</depend>
-  <depend>rospy</depend>
   <depend>std_msgs</depend>
   <depend>tf2_ros</depend>
   <depend>visualization_msgs</depend>
 
+  <exec_depend>rospy</exec_depend>
   <exec_depend>python-numpy</exec_depend>
   <exec_depend>python-networkx</exec_depend>
   <exec_depend>python-scipy</exec_depend>
+
+  <test_depend>rostest</test_depend>
 
 </package>

@@ -13,14 +13,13 @@ from threading import Lock
 from typing import Optional, Tuple, Union
 
 import icp
-import transform2D_utils as t2d
-import map_conversions as mc
+import transform2d_utils as t2d
+# import map_conversions as mc
 
 # Indexing values
 X = 0
 Y = 1
 THETA = 2
-
 
 class LidarLocalization:
     def __init__(self) -> None:
@@ -85,15 +84,6 @@ class LidarLocalization:
     def mapCallback(self, msg: OccupancyGrid) -> None:
         with self.lock:
             self.initalizeICP(msg)
-    
-
-    def lookupTransform(self, base_frame: str, child_frame: str, stamp: rospy.Time, time_travel: Optional[rospy.Duration]=rospy.Duration(0)) -> Union[None, np.ndarray]:
-        try:
-            trans = self.tf_buffer.lookup_transform(base_frame, child_frame, stamp - time_travel, rospy.Duration(2.0))
-        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as error:
-            rospy.logwarn("TF lookup failed: ", error)
-            return None
-        return t2d.transform2homogeneous(trans.transform)
 
 
     def publishMapOdomTF(self, time: rospy.Time) -> None:
