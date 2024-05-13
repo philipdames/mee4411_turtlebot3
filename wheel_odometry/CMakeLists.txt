@@ -9,6 +9,11 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
 )
 
+catkin_python_setup()
+
+###################################
+## catkin specific configuration ##
+###################################
 catkin_package(
  CATKIN_DEPENDS geometry_msgs nav_msgs rospy sensor_msgs tf2_ros
 )
@@ -16,8 +21,17 @@ catkin_package(
 #############
 ## Install ##
 #############
-# catkin_install_python(PROGRAMS
-#   src/wheel_odometry/wheel_odometry.py
-#   src/wheel_odometry/tb3_kinematics.py
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS 
+  nodes/wheel_odometry
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+#############
+## Testing ##
+#############
+if (CATKIN_ENABLE_TESTING)
+  catkin_add_nosetests(
+    tests/test_kinematics.py
+    DEPENDENCIES ${${PROJECT_NAME}_EXPORTED_TARGETS}
+  )
+endif()

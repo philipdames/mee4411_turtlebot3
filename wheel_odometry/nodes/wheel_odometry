@@ -1,0 +1,12 @@
+#!/usr/bin/env python3
+
+import rospy
+
+from wheel_odometry import WheelOdometryNode
+
+
+if __name__ == '__main__':
+    # Initialize objects
+    rospy.init_node('wheel_odometry')
+    wo = WheelOdometryNode()
+    rospy.spin()
