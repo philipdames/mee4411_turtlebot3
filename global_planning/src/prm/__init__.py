@@ -13,8 +13,8 @@ from threading import Lock
 from typing import Optional, Union
 
 from .prm import PRM
-import tb3_utils.transform2d as t2d
-from tb3_utils.tb3_params import TB3Params
+import transform2d_utils as t2d
+from tb3_utils import TB3Params
 
 
 class PRMNode:

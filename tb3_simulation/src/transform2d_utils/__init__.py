@@ -88,7 +88,7 @@ def homogeneous2transform(T: np.ndarray) -> Transform:
     return xyt2transform(*homogeneous2xyt(T))
 
 
-def lookupTransform(tf_buffer: tf2_ros.Buffer, base_frame: str, child_frame: str, stamp: rospy.Time, time_travel: Optional[rospy.Duration]=rospy.Duration(0), format: Optional[str]='transform') -> Union[None, np.ndarray, Transform, Tuple]:
+def lookup_transform(tf_buffer: tf2_ros.Buffer, base_frame: str, child_frame: str, stamp: rospy.Time, time_travel: Optional[rospy.Duration]=rospy.Duration(0), format: Optional[str]='transform') -> Union[None, np.ndarray, Transform, Tuple]:
     '''
     Look up transformation on the TF2 buffer from base_frame to child_frame
     Inputs:

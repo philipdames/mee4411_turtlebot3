@@ -4,7 +4,7 @@ from geometry_msgs.msg import Transform
 import unittest
 import numpy as np
 
-import tb3_utils.transform2d as t2d
+import transform2d_utils as t2d
 
 ## A sample python unit test
 class TestTransform2DUtils(unittest.TestCase):

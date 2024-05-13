@@ -3,7 +3,7 @@ from sensor_msgs.msg import JointState
 import numpy as np
 from typing import List
 
-from tb3_utils.tb3_params import TB3Params
+from tb3_utils import TB3Params
 
 # Indexing values
 LEFT = 0
