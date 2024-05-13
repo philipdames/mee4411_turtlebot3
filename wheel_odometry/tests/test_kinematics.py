@@ -6,7 +6,7 @@ import numpy as np
 import rospy
 from sensor_msgs.msg import JointState
 
-from tb3_kinematics import TB3Kinematics
+from wheel_odometry import TB3Kinematics
 
 ## A sample python unit test
 class TestKinematics(unittest.TestCase):

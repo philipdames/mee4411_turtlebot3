@@ -9,7 +9,7 @@ from nav_msgs.msg import Odometry
 
 import numpy as np
 
-from tb3_kinematics import TB3Kinematics
+from .tb3_kinematics import TB3Kinematics
 
 # Indexing values
 LEFT = 0
