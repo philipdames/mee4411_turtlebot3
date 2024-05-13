@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(occupancy_grid)
 
+cmake_policy(SET CMP0148 OLD)
+
 find_package(catkin REQUIRED COMPONENTS
-  geometry_msgs
   nav_msgs
   std_msgs
-  tf2_ros
   visualization_msgs
 )
 

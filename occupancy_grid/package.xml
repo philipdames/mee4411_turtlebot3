@@ -10,17 +10,11 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   
-  <depend>geometry_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>std_msgs</depend>
-  <depend>tf2_ros</depend>
   <depend>visualization_msgs</depend>
 
   <exec_depend>rospy</exec_depend>
   <exec_depend>python-numpy</exec_depend>
-  <exec_depend>python-networkx</exec_depend>
-  <exec_depend>python-scipy</exec_depend>
-
-  <test_depend>rostest</test_depend>
 
 </package>
