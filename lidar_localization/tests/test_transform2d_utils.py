@@ -103,9 +103,3 @@ class TestTransform2DUtils(unittest.TestCase):
         for r in range(2):
             for c in range(2):
                 self.assertTrue(np.abs(T[r,c] - T_true[r,c]) < 1e-4, f'Element in ({r:d},{c:d}) has the wrong value, {T[r,c]:.6f} instead of {T_true[r,c]:.6f}')
-
-
-if __name__ == '__main__':
-    import rostest
-    rostest.rosrun('create_occ_grid', 'test_transform2D_utils', TestTransform2DUtils)
-

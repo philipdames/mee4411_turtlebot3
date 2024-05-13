@@ -14,7 +14,7 @@ from typing import Optional, Tuple, Union
 
 import icp
 import transform2d_utils as t2d
-# import map_conversions as mc
+from occupancy_grid_map import OccupancyGridMap
 
 # Indexing values
 X = 0
@@ -50,6 +50,7 @@ class LidarLocalization:
             self.map_client = rospy.ServiceProxy('static_map', GetMap)
             rospy.sleep(0.1) # pause to let the service start up
             res = self.map_client()
+            self.ogm = OccupancyGridMap(res.map)
             self.initalizeICP(res.map)
 
         # TF information
@@ -83,6 +84,7 @@ class LidarLocalization:
 
     def mapCallback(self, msg: OccupancyGrid) -> None:
         with self.lock:
+            self.ogm = OccupancyGridMap(msg)
             self.initalizeICP(msg)
 
 

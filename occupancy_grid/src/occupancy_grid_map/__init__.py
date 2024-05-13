@@ -21,12 +21,21 @@ class OccupancyGridMap(MapConversions):
         '''
         Create an object from an OccupancyGrid msg
         '''
-        # Initialize object
-        ogm = super(OccupancyGridMap, cls).from_occupancy_grid_msg(msg)
         ##### YOUR CODE STARTS HERE #####
-        # TODO Update data array, based on conventions above
+        # TODO Extract boundary, resolution, and frame_id from input message
+        boundary = [0., 0., 1., 1.]
+        resolution = 1.
+        frame_id = 'frame'
+        ##### YOUR CODE ENDS HERE   #####
+
+        # Initialize object
+        ogm = cls(boundary, resolution, frame_id)
+
+        ##### YOUR CODE STARTS HERE #####
+        # TODO Update data array in ogm, based on conventions in the __init__ method
         pass
         ##### YOUR CODE ENDS HERE   #####
+
         return ogm
 
 
