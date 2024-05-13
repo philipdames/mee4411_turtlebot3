@@ -23,6 +23,6 @@ catkin_install_python(PROGRAMS nodes/create_occupancy_grid nodes/block_vis
                       DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 if (CATKIN_ENABLE_TESTING)
-  find_package(rostest REQUIRED)
-  add_rostest(tests/map_conversions.test)
+  catkin_add_nosetests(tests/test_map_conversions.py
+                      DEPENDENCIES ${${PROJECT_NAME}_EXPORTED_TARGETS})
 endif()
