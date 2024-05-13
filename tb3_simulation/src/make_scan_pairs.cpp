@@ -9,7 +9,7 @@
 #include <LaserSimulator.h>
 #include <tf/tf.h>
 
-#include <laser_simulator/ScanPair.h>
+#include <tb3_simulation/ScanPair.h>
 
 #include <rosbag/bag.h>
 
@@ -29,7 +29,7 @@ void handle_occupancy_grid(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
 }
 
 void straight(tf::Pose start_pose, double step_size, int nsteps,
-              laser_simulator::ScanPair *pair, rosbag::Bag *bag) {
+              tb3_simulation::ScanPair *pair, rosbag::Bag *bag) {
   tf::Transform tform(tf::createQuaternionFromYaw(0.0),
                       tf::Vector3(step_size, 0, 0));
   tf::Pose stop_pose;
@@ -99,7 +99,7 @@ void sim_pairs(rosbag::Bag *bag) {
       idle.sleep();
     }
 
-  laser_simulator::ScanPair scan_pair;
+  tb3_simulation::ScanPair scan_pair;
   std::string frame_id;
   n.param("frame_id", frame_id, std::string("laser"));
   scan_pair.scan1.header.frame_id = frame_id;
@@ -166,7 +166,7 @@ void from_bag(const string &input_fname, rosbag::Bag *out_bag) {
   rosbag::View laser_view(input, rosbag::TopicQuery(topics));
   sensor_msgs::LaserScan::ConstPtr laser_first, laser_second, laser;
 
-  laser_simulator::ScanPair pair;
+  tb3_simulation::ScanPair pair;
   BOOST_FOREACH(rosbag::MessageInstance &m, laser_view) {
     laser = m.instantiate<sensor_msgs::LaserScan>();
     if (laser == NULL) {

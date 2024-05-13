@@ -14,18 +14,18 @@
 
   <param name="tb3_model" value="$(arg model)"/>
 
+  <!-- Map -->
+  <node pkg="map_server" name="map" type="map_server" output="screen" 
+        args="$(find tb3_simulation)/maps/levine-4.yaml"/>
+
   <!-- Simulated Robot -->
-  <include file="$(find mee4411_core)/launch/simulated_robot.launch" ns="$(arg sim_namespace)">
+  <include file="$(find tb3_simulation)/launch/tb3_simulation.launch" ns="$(arg sim_namespace)">
     <arg name="sim_namespace"   value="$(arg sim_namespace)" />
     <arg name="initial_pose_x"  value="$(arg initial_pose_x)" />
     <arg name="initial_pose_y"  value="$(arg initial_pose_y)" />
     <arg name="initial_pose_a"  value="$(arg initial_pose_a)" />
     <arg name="joint_noise_std" value="$(arg joint_noise_std)" />
   </include>
-
-  <!-- Map -->
-  <node pkg="map_server" name="map" type="map_server" output="screen" 
-        args="$(find mee4411_core)/maps/levine-4.yaml"/>
 
   <!-- Transformations -->
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
@@ -36,19 +36,13 @@
   <node pkg="turtlebot3_fake" type="turtlebot3_fake_node" name="turtlebot3_fake_node" output="screen" />
 
   <!-- Localization -->
-  <!-- <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster"
-        args="$(arg initial_pose_x) $(arg initial_pose_y) 0 $(arg initial_pose_a) 0 0 /map /odom 100" /> -->
-  <node pkg="lidar_localization" type="lidar_localization" name="lidar_localization" >
-    <param name="initial_pose_x"  value="$(arg initial_pose_x)" />
-    <param name="initial_pose_y"  value="$(arg initial_pose_y)" />
-    <param name="initial_pose_a"  value="$(arg initial_pose_a)" />
-  </node>
+  <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster"
+        args="$(arg initial_pose_x) $(arg initial_pose_y) 0 $(arg initial_pose_a) 0 0 /map /odom 100" />
 
   <!-- Robot visualization -->
   <include file="$(find turtlebot3_bringup)/launch/includes/description.launch.xml">
     <arg name="model" value="$(arg model)" />
   </include>
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mee4411_core)/rviz/mee4411.rviz"/>
-
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find tb3_simulation)/rviz/mee4411.rviz"/>
 
 </launch>

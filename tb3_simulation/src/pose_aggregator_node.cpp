@@ -4,8 +4,8 @@
 #include "ros/ros.h"
 
 #include "geometry_msgs/PoseStamped.h"
-#include "laser_simulator/PoseStampedNamed.h"
-#include "laser_simulator/PoseStampedNamedArray.h"
+#include "tb3_simulation/PoseStampedNamed.h"
+#include "tb3_simulation/PoseStampedNamedArray.h"
 
 using namespace std;
 
@@ -31,7 +31,7 @@ class PoseSubscriber {
       pose_.child_frame_id = frame_;
     }
 
-    laser_simulator::PoseStampedNamed* GetPose() {
+    tb3_simulation::PoseStampedNamed* GetPose() {
       return &pose_;
     }
 
@@ -40,7 +40,7 @@ class PoseSubscriber {
     ros::Subscriber sub_;
 
     string frame_;
-    laser_simulator::PoseStampedNamed pose_;
+    tb3_simulation::PoseStampedNamed pose_;
 };
 
 
@@ -48,7 +48,7 @@ class PoseAggregator {
   public:
     PoseAggregator(ros::NodeHandle& node, unsigned int count) {
       msg_.poses.resize(count);
-      pub_ = node.advertise<laser_simulator::PoseStampedNamedArray>(
+      pub_ = node.advertise<tb3_simulation::PoseStampedNamedArray>(
                               "pose_array", 1);
 
       string agent_prefix;
@@ -75,7 +75,7 @@ class PoseAggregator {
       unsigned int j = 0;
       for (vector<PoseSubscriber*>::iterator i=subscribers_.begin();
            i!=subscribers_.end(); ++i, j++) {
-        laser_simulator::PoseStampedNamed* m = (*i)->GetPose();
+        tb3_simulation::PoseStampedNamed* m = (*i)->GetPose();
         msg_.poses[j] = *m;
       }
 
@@ -86,7 +86,7 @@ class PoseAggregator {
     ros::Publisher pub_;
     vector<PoseSubscriber*> subscribers_;
 
-    laser_simulator::PoseStampedNamedArray msg_;
+    tb3_simulation::PoseStampedNamedArray msg_;
 };
 
 

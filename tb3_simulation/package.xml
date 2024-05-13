@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>laser_simulator</name>
+  <name>tb3_simulation</name>
   <version>0.0.0</version>
-  <description>laser_simulator</description>
+  <description>tb3_simulation</description>
   <maintainer email="bcharrow@seas.upenn.edu">bcharrow</maintainer>
   <author>Nathan Michael</author>
   <license>GPLv3</license>
