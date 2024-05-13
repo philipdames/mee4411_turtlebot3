@@ -11,18 +11,28 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_python_setup()
 
+###################################
+## catkin specific configuration ##
+###################################
 catkin_package(
-  CATKIN_DEPENDS geometry_msgs nav_msgs std_msgs tf2_ros visualization_msgs
+  CATKIN_DEPENDS nav_msgs std_msgs visualization_msgs
 )
 
-include_directories(
-  ${catkin_INCLUDE_DIRS}
+#############
+## Install ##
+#############
+catkin_install_python(PROGRAMS 
+  nodes/create_occupancy_grid
+  nodes/block_vis
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-catkin_install_python(PROGRAMS nodes/create_occupancy_grid nodes/block_vis
-                      DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-
+#############
+## Testing ##
+#############
 if (CATKIN_ENABLE_TESTING)
-  catkin_add_nosetests(tests/test_map_conversions.py
-                      DEPENDENCIES ${${PROJECT_NAME}_EXPORTED_TARGETS})
+  catkin_add_nosetests(
+    tests/test_map_conversions.py
+    DEPENDENCIES ${${PROJECT_NAME}_EXPORTED_TARGETS}
+  )
 endif()

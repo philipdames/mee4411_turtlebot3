@@ -3,7 +3,7 @@
 import unittest
 import numpy as np
 
-from occupancy_grid_utils import MapConversions
+from map_conversions import MapConversions
 
 ## A sample python unit test
 class TestMapConversions(unittest.TestCase):
@@ -27,8 +27,9 @@ class TestMapConversions(unittest.TestCase):
         
         # Ensure that calculated outputs match desired outputs
         for i in range(0, rows.size):
-            self.assertEquals(inds[i], inds_true[i], "sub (%d,%d) has the wrong index (ind %d instead of %d) in map of size %d by %d" % (rows[i], cols[i], inds[i], inds_true[i], shape[0], shape[1]))
-    
+            self.assertEquals(inds[i], inds_true[i], f"sub ({rows[i]}, {cols[i]}) has the wrong index (ind {inds[i]} instead of {inds_true[i]}) in map of size {shape[0]} by {shape[1]}")
+
+
     ## test ind2sub
     def test_ind2sub(self):
         # Set up MapConversions
@@ -49,9 +50,10 @@ class TestMapConversions(unittest.TestCase):
         
         # Ensure that calculated outputs match desired outputs
         for i in range(0, inds.size):
-            self.assertEquals(rows[i], rows_true[i], "ind %d has the wrong row (%d instead of row %d) in map of size %d by %d" % (i, rows[i], rows_true[i], shape[0], shape[1]))
-            self.assertEquals(cols[i], cols_true[i], "ind %d has the wrong column (%d instead of col %d) in map of size %d by %d" % (i, cols[i], cols_true[i], shape[0], shape[1]))
-    
+            self.assertEquals(rows[i], rows_true[i], f"ind {i} has the wrong row ({rows[i]} instead of row {rows_true[i]}) in map of size {shape[0]} by {shape[1]}")
+            self.assertEquals(cols[i], cols_true[i], f"ind {i} has the wrong column ({cols[i]} instead of col {cols_true[i]}) in map of size {shape[0]} by {shape[1]}")
+
+
     ## test xy2sub
     def test_xy2sub(self):
         # Set up MapConversions
@@ -72,9 +74,10 @@ class TestMapConversions(unittest.TestCase):
         
         # Ensure that calculated outputs match desired outputs
         for i in range(0, x.size):
-            self.assertEquals(rows[i], rows_true[i], "(%.2f, %.2f) has wrong row (%d instead of %d) in map with boundary (%.2f, %.2f) to (%.2f, %.2f)" % (x[i], y[i], rows[i], rows_true[i], boundary[0], boundary[1], boundary[2], boundary[3]))
-            self.assertEquals(cols[i], cols_true[i], "(%.2f, %.2f) has wrong column (%d instead of %d) in map with boundary (%.2f, %.2f) to (%.2f, %.2f)" % (x[i], y[i], cols[i], cols_true[i], boundary[0], boundary[1], boundary[2], boundary[3]))
-    
+            self.assertEquals(rows[i], rows_true[i], f"point ({x[i]:.2f}, {y[i]:.2f}) has wrong row ({rows[i]} instead of row {rows_true[i]}) in map with boundary ({boundary[0]:.2f}, {boundary[1]:.2f}) to ({boundary[2]:.2f}, {boundary[3]:.2f})")
+            self.assertEquals(cols[i], cols_true[i], f"point ({x[i]:.2f}, {y[i]:.2f}) has wrong column ({cols[i]} instead of col {cols_true[i]})) in map with boundary ({boundary[0]:.2f}, {boundary[1]:.2f}) to ({boundary[2]:.2f}, {boundary[3]:.2f})")
+
+
     ## test sub2xy
     def test_sub2xy(self):
         # Set up MapConversions
@@ -95,8 +98,8 @@ class TestMapConversions(unittest.TestCase):
         
         # Ensure that calculated outputs match desired outputs
         for i in range(0, rows.size):
-            x_err_str = "sub (%d, %d) has wrong x (%.2f instead of %.2f) in map with boundary (%.2f, %.2f) to (%.2f, %.2f)" % (rows[i], cols[i], x[i], x_true[i], boundary[0], boundary[1], boundary[2], boundary[3])
-            y_err_str = "sub (%d, %d) has wrong y (%.2f instead of %.2f) in map with boundary (%.2f, %.2f) to (%.2f, %.2f)" % (rows[i], cols[i], y[i], y_true[i], boundary[0], boundary[1], boundary[2], boundary[3])
+            x_err_str = f"sub ({rows[i]}, {cols[i]}) has wrong x ({x[i]:.2f} instead of {x_true[i]:.2f}) in map with boundary ({boundary[0]:.2f}, {boundary[1]:.2f}) to ({boundary[2]:.2f}, {boundary[3]:.2f})"
+            y_err_str = f"sub ({rows[i]}, {cols[i]}) has wrong y ({y[i]:.2f} instead of {y_true[i]:.2f}) in map with boundary ({boundary[0]:.2f}, {boundary[1]:.2f}) to ({boundary[2]:.2f}, {boundary[3]:.2f})"
             if np.isnan(x_true[i]):
                 self.assertTrue(np.isnan(x[i]), x_err_str)
                 self.assertTrue(np.isnan(y[i]), y_err_str)

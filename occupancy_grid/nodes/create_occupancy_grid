@@ -3,7 +3,9 @@
 import rospy
 from nav_msgs.msg import OccupancyGrid
 
-from occupancy_grid_utils import MapConversions, OccupancyGridMap
+from map_converions import MapConversions
+from occupancy_grid_map import OccupancyGridMap
+
 
 def create_occupancy_grid_from_blocks():
     ##### YOUR CODE STARTS HERE #####
