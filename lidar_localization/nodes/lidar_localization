@@ -13,7 +13,7 @@ from threading import Lock
 from typing import Optional, Tuple, Union
 
 import icp
-import transform2d_utils as t2d
+import tb3_utils.transform2d as t2d
 from occupancy_grid_map import OccupancyGridMap
 
 # Indexing values

@@ -23,7 +23,7 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/LaserScan.h>
-#include <tb3_simulation/PoseStampedNamedArray.h>
+#include <laser_simulator/PoseStampedNamedArray.h>
 #include <LaserSimulator.h>
 #include <tf/tf.h>
 #include <tf/transform_listener.h>
@@ -141,7 +141,7 @@ private:
     map_set = true;
   }
 
-  void handle_pose_array(const tb3_simulation::PoseStampedNamedArray::ConstPtr& pose)
+  void handle_pose_array(const laser_simulator::PoseStampedNamedArray::ConstPtr& pose)
   {
     boost::mutex::scoped_lock(sim_mutex);
     sim.UpdatePoseArray(*pose);

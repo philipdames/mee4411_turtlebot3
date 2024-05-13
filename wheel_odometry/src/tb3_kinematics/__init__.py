@@ -3,6 +3,8 @@ from sensor_msgs.msg import JointState
 import numpy as np
 from typing import List
 
+from tb3_utils.tb3_params import TB3Params
+
 # Indexing values
 LEFT = 0
 RIGHT = 1
@@ -11,19 +13,10 @@ X = 0
 Y = 1
 THETA = 2
 
+
 class TB3Kinematics:
     def __init__(self, robot_model) -> None:
-        if robot_model == 'burger':
-            self.wheel_separation = 0.160 # [m]
-            self.turning_radius = 0.080 # [m]
-            self.robot_radius = 0.105 # [m]
-        elif robot_model == 'waffle' or robot_model == 'waffle_pi':
-            self.wheel_separation = 0.287 # [m]
-            self.turning_radius = 0.1435 # [m]
-            self.robot_radius = 0.220 # [m]
-        else:
-            raise Exception(f'Turtlebot3 model {robot_model} not defined')
-        self.wheel_radius = 0.033 # [m]
+        self.params = TB3Params(robot_model)
 
 
     def calculate_wheel_change(self, new_joint_states: JointState, prev_joint_states: JointState) -> List[float]:

@@ -31,11 +31,3 @@ catkin_install_python(PROGRAMS
   nodes/lidar_localization
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
-
-#############
-## Testing ##
-#############
-if (CATKIN_ENABLE_TESTING)
-  catkin_add_nosetests(tests/test_transform2d_utils.py
-                      DEPENDENCIES ${${PROJECT_NAME}_EXPORTED_TARGETS})
-endif()
