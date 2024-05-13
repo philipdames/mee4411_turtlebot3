@@ -7,6 +7,7 @@ from visualization_msgs.msg import Marker, MarkerArray
 import networkx as nx
 import numpy as np
 from scipy.spatial import KDTree
+from tqdm import tqdm
 
 import map_conversions as mc
 
@@ -30,7 +31,7 @@ class PRM:
             self.marker_pub = rospy.Publisher('~graph', MarkerArray, latch=True, queue_size=10)
 
 
-    def buildRoadmap(self, map: OccupancyGrid) -> None:
+    def build_roadmap(self, map: OccupancyGrid) -> None:
         '''
         Build the probabilistic roadmap in the given occupancy grid
         '''
@@ -40,9 +41,9 @@ class PRM:
         # Build graph
         self.graph = nx.Graph() # intialize empty graph
         
-        for i in range(self.n_points):
-            # Generate valid node
-            # TODO generate a point in free space 
+        for i in tqdm(range(self.n_points)):
+            ##### YOUR CODE STARTS HERE #####
+            # TODO Generate valid node
             pass
 
             # TODO add the point to the graph node list with an attribute called 'location' holding the 2D position
@@ -59,9 +60,9 @@ class PRM:
 
             # TODO if it is a clear path, add it to the graph edge list
             pass
-            
+            ##### YOUR CODE ENDS HERE   #####
             # Display graph as it is being built
-            if i % 100 == 99:
+            if i % 20 == 19:
                 self.show()
         
         # Show final graph
@@ -73,34 +74,39 @@ class PRM:
         self.kdtree = KDTree(pts)
 
 
-    def sampleFreePoint(self) -> np.array:
+    def sample_free_point(self) -> np.array:
         '''
         Draw a random points from within the free space of self.map
         Return a 2D point within the map as a numpy.array
         '''
-        # Draw a random point within the boundary
-        pt = np.random.rand(2) # TODO make this correct
+        ##### YOUR CODE STARTS HERE #####
+        # TODO Draw a random point within the boundary
+        pt = np.random.rand(2)
 
-        # Check if point is valid (i.e., not in collision based on self.map)
-        # TODO figure out if pt is in collision, if it is try again, if not then return the point
+        # TODO Check if point is valid (i.e., not in collision based on self.map)
+        #      If it is try again, if not then return the point
         pass
+        ##### YOUR CODE ENDS HERE   #####
 
         return pt
 
 
-    def validEdge(self, p0: np.array, p1: np.array) -> bool:
+    def valid_edge(self, p0: np.array, p1: np.array) -> bool:
         '''
         Check to see if an edge connection p0 to p1 is in collision with the map
         '''
+        ##### YOUR CODE STARTS HERE #####
         # TODO create a series of points starting at p0 and ending at p1 in steps of self.step_size
         pass
+
         # TODO Check to make sure none of the points collide with the map
         pass
+        ##### YOUR CODE ENDS HERE   #####
 
         return False # TODO fix this
 
 
-    def findNearestNode(self, pt: np.array) -> int:
+    def find_nearest_node(self, pt: np.array) -> int:
         '''
         Find the nearest node in the graph (with a valid edge) to the input point pt
         Return the index of the node
@@ -129,6 +135,7 @@ class PRM:
         if n_goal is None:
             raise Exception('Goal point invalid')
         
+        ##### YOUR CODE STARTS HERE #####
         # Plan path using A*
         # TODO use networkx library to call A* to find a path from n_start to n_goal
         pass
@@ -137,12 +144,12 @@ class PRM:
         # TODO convert the path returned by networkx to a nav_msgs/Path
         # NOTE make sure to include the start and goal points
         pass
+        ##### YOUR CODE ENDS HERE   #####
         
         return Path() # TODO fix this
 
 
     def show(self) -> None:
-        rospy.loginfo('Graph has %d nodes', self.graph.number_of_nodes())
         if not self.show_prm:
             return
         

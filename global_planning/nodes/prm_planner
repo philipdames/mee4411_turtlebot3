@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+import rospy
+
+from prm import PRMNode
+
+if __name__ == '__main__':
+    # Initialize objects
+    rospy.init_node('prm_node')
+    p = PRMNode()
+    rospy.spin()
