@@ -4,7 +4,7 @@
   <version>0.0.0</version>
   <description>The lidar_localization package</description>
 
-  <maintainer email="pdames@todo.todo">pdames</maintainer>
+  <maintainer email="pdames@temple.edu">Philip Dames</maintainer>
 
   <license>LGPLv3</license>
 
@@ -12,14 +12,19 @@
   
   <depend>geometry_msgs</depend>
   <depend>nav_msgs</depend>
-  <depend>occupancy_grid</depend>
   <depend>sensor_msgs</depend>
-  <depend>tf2_ros</depend>
   <depend>visualization_msgs</depend>
 
+  <depend>occupancy_grid</depend>
+  <depend>tb3_simulation</depend>
+
   <exec_depend>rospy</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+
   <exec_depend>python-numpy</exec_depend>
   <exec_depend>python-sklearn</exec_depend>
+  <exec_depend>python-threading</exec_depend>
+  <exec_depend>python-typing</exec_depend>
 
   <test_depend>rostest</test_depend>
 

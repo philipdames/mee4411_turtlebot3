@@ -16,8 +16,8 @@ from sensor_msgs.msg import LaserScan
 from visualization_msgs.msg import MarkerArray
 
 # DNN model
-from dnn_model import load_dnn_params, DnnNet, set_seed
-from dnn_model import normalize_scan, normalize_sub_goal, normalize_final_goal, unnormalize_velocities
+from .dnn_model import load_dnn_params, DnnNet, set_seed
+from .dnn_model import normalize_scan, normalize_sub_goal, normalize_final_goal, unnormalize_velocities
 
 from pure_pursuit import PurePursuit
 from transform2d_utils import lookup_transform

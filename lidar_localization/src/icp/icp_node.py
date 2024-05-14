@@ -8,10 +8,9 @@ from nav_msgs.srv import GetMap
 
 import numpy as np
 from threading import Lock
-from typing import Optional, Tuple, Union
 
 from .icp import MapICP
-import tb3_utils.transform2d as t2d
+import transform2d_utils as t2d
 from occupancy_grid import OccupancyGridMap
 
 # Indexing values

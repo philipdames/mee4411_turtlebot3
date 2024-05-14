@@ -10,11 +10,11 @@ from nav_msgs.srv import GetMap
 import cv2 as cv
 import numpy as np
 from threading import Lock
-from typing import Optional, Union
 
 from .prm import PRM
 import transform2d_utils as t2d
 from tb3_utils import TB3Params
+from occupancy_grid import OccupancyGridMap
 
 
 class PRMNode:
@@ -106,7 +106,7 @@ class PRMNode:
         self.costmap_pub.publish(map)
 
         # Make PRM
-        self.prm.buildRoadmap(map)
+        self.prm.buildRoadmap(OccupancyGridMap.from_occupancy_grid_msg(map))
 
 
     def map_callback(self, msg: OccupancyGrid) -> None:

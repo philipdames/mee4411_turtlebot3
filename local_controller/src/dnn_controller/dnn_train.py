@@ -9,7 +9,7 @@ from torch.optim import Adam
 from tensorboardX import SummaryWriter
 
 # import the model
-from dnn_model import set_seed, loadDNNParams, NavDataset, DnnNet
+from .dnn_model import set_seed, load_dnn_params, NavDataset, DnnNet
 
 # import modules
 import os
@@ -127,7 +127,7 @@ def main(argv):
     pDev       = argv[3]
 
     # Load parameters
-    dnn_params = loadDNNParams(param_file)
+    dnn_params = load_dnn_params(param_file)
 
     # get the output directory name
     odir = os.path.dirname(mdl_path)

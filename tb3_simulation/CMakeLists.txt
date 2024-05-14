@@ -3,8 +3,7 @@ project(tb3_simulation)
 
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
-  rospy
-  tf2_ros
+  sensor_msgs
 )
 
 catkin_python_setup()

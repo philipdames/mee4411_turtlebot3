@@ -4,8 +4,9 @@ project(local_controller)
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
-  rospy
-  tf
+  sensor_msgs
+  visualization_msgs
+  tb3_simulation
 )
 
 catkin_python_setup()

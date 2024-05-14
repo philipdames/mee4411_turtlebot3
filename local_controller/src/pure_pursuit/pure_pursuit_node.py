@@ -68,7 +68,7 @@ class PurePursuitNode(PurePursuit):
         '''
         try:
             # Get current pose
-            (x, y, theta) = lookup_transform(self.tfBuffer, self.path.header.frame_id, self.robot_frame_id, rospy.Time.now(), format='xyt')
+            x, y, theta = lookup_transform(self.tfBuffer, self.path.header.frame_id, self.robot_frame_id, rospy.Time.now(), format='xyt')
 
             # Find the goal point
             with self.lock:

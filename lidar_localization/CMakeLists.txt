@@ -4,8 +4,10 @@ project(lidar_localization)
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
-  occupancy_grid
   sensor_msgs
+  visualization_msgs
+  occupancy_grid
+  tb3_simulation
 )
 
 catkin_python_setup()
@@ -14,14 +16,7 @@ catkin_python_setup()
 ## catkin specific configuration ##
 ###################################
 catkin_package(
- CATKIN_DEPENDS geometry_msgs nav_msgs occupancy_grid sensor_msgs
-)
-
-###########
-## Build ##
-###########
-include_directories(
-  ${catkin_INCLUDE_DIRS}
+ CATKIN_DEPENDS geometry_msgs nav_msgs sensor_msgs visualization_msgs occupancy_grid tb3_simulation
 )
 
 #############

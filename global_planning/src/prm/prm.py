@@ -9,7 +9,7 @@ import numpy as np
 from scipy.spatial import KDTree
 from tqdm import tqdm
 
-from occupancy_grid import MapConversions
+from occupancy_grid import OccupancyGridMap
 
 Z = 0.0 # z coordinate for the graph display
 ALPHA = 0.25 # alpha value for graph transparency
@@ -31,7 +31,7 @@ class PRM:
             self.marker_pub = rospy.Publisher('~graph', MarkerArray, latch=True, queue_size=10)
 
 
-    def build_roadmap(self, map: OccupancyGrid) -> None:
+    def build_roadmap(self, map: OccupancyGridMap) -> None:
         '''
         Build the probabilistic roadmap in the given occupancy grid
         '''
@@ -128,10 +128,10 @@ class PRM:
             raise Exception('PRM not initialized')
         
         # Find nearest nodes to start and goal
-        n_start = self.findNearestNode(start)
+        n_start = self.find_nearest_node(start)
         if n_start is None:
             raise Exception('Start point invalid')
-        n_goal = self.findNearestNode(goal)
+        n_goal = self.find_nearest_node(goal)
         if n_goal is None:
             raise Exception('Goal point invalid')
         

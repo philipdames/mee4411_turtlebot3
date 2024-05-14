@@ -4,7 +4,7 @@
   <version>0.0.0</version>
   <description>The occupancy_grid package</description>
 
-  <maintainer email="pdames@temple.edu">pdames</maintainer>
+  <maintainer email="pdames@temple.edu">Philip Dames</maintainer>
 
   <license>LGPLv3</license>
 
@@ -16,5 +16,6 @@
 
   <exec_depend>rospy</exec_depend>
   <exec_depend>python-numpy</exec_depend>
+  <exec_depend>python-typing</exec_depend>
 
 </package>

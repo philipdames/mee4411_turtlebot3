@@ -5,7 +5,7 @@ import torch
 from tqdm import tqdm
 
 # import the model and all of its variables/functions
-from dnn_model import loadDNNParams, NavDataset, DnnNet
+from .dnn_model import load_dnn_params, NavDataset, DnnNet
 import numpy as np
 
 # import modules
@@ -43,7 +43,7 @@ def main(argv):
         os.makedirs(odir)
 
     # load DNN training params
-    dnn_params = loadDNNParams(param_file)
+    dnn_params = load_dnn_params(param_file)
 
     # set the device to use GPU if available:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

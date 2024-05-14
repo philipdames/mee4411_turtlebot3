@@ -4,8 +4,8 @@ project(global_planning)
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
+  visualization_msgs
   occupancy_grid
-  rospy
   tb3_simulation
 )
 

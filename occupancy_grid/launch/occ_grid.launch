@@ -3,7 +3,7 @@
        doc="Name of the coordinate frame associated with the map"/>
   <arg name="resolution" default="0.25"
        doc="Size of the cells in the occupancy grid in meters"/>
-  <arg name="filename" default="$(find occupancy_grid)/maps/map0.yaml"
+  <arg name="filename" default="$(find tb3_simulation)/maps/map0.yaml"
        doc="Name of the file containing the environment description"/>
 
   <node pkg="occupancy_grid" name="create_occupancy_grid" type="create_occupancy_grid"
