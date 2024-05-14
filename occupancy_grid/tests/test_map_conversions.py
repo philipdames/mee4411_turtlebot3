@@ -3,7 +3,7 @@
 import unittest
 import numpy as np
 
-from map_conversions import MapConversions
+from occupancy_grid import MapConversions
 
 ## A sample python unit test
 class TestMapConversions(unittest.TestCase):

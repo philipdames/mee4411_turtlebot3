@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import rospy
 import tf2_ros
 
@@ -12,16 +10,16 @@ import numpy as np
 from threading import Lock
 from typing import Optional, Tuple, Union
 
-import icp
+from .icp import MapICP
 import tb3_utils.transform2d as t2d
-from occupancy_grid_map import OccupancyGridMap
+from occupancy_grid import OccupancyGridMap
 
 # Indexing values
 X = 0
 Y = 1
 THETA = 2
 
-class LidarLocalization:
+class ICPLocalizationNode:
     def __init__(self) -> None:
         # Get initial pose (of odom with respect to map frame)
         initial_pose_x = rospy.get_param('~initial_pose_x', 0.0)
@@ -36,14 +34,14 @@ class LidarLocalization:
         self.tf_map_odom.child_frame_id = rospy.get_param('~odom_frame', 'odom')
 
         # Initialize ICP object
-        self.icp = icp.MapICP()
+        self.icp = MapICP()
         self.tolerance = None # tolerance for fitting
         self.lock = Lock() # to ensure ICP object can be locked
 
         # Get map
         use_map_topic = rospy.get_param('~use_map_topic', False)
         if use_map_topic:
-            rospy.map_sub = rospy.Subscriber('map', OccupancyGrid, self.mapCallback, queue_size=100)
+            rospy.map_sub = rospy.Subscriber('map', OccupancyGrid, self.map_callback, queue_size=100)
             self.map = None
         else:
             rospy.wait_for_service('static_map')
@@ -51,7 +49,7 @@ class LidarLocalization:
             rospy.sleep(0.1) # pause to let the service start up
             res = self.map_client()
             self.ogm = OccupancyGridMap(res.map)
-            self.initalizeICP(res.map)
+            self.initalize_icp(res.map)
 
         # TF information
         self.tf_buffer      = tf2_ros.Buffer()
@@ -61,72 +59,76 @@ class LidarLocalization:
 
         # Publish initial transformation
         rospy.sleep(0.1) # pause to let the tf broadcaster start up
-        self.publishMapOdomTF(rospy.Time.now())
+        self.publish_map_odom_tf(rospy.Time.now())
 
         # Scan subscriber
-        self.scan_sub = rospy.Subscriber('scan', LaserScan, self.scanCallback, queue_size=1)
+        self.scan_sub = rospy.Subscriber('scan', LaserScan, self.scan_callback, queue_size=1)
 
 
-    def initalizeICP(self, map: OccupancyGrid) -> None:
+    def initalize_icp(self, map: OccupancyGrid) -> None:
         # Set map tolerance to be the map cell size
         self.tolerance = map.info.resolution
 
         # Set transformation frame to be the map frame
         self.tf_map_odom.header.frame_id = map.header.frame_id
 
-        # Extract all the points in the map
-        # TODO find the (x,y) locations of all objects in the map
+        ##### YOUR CODE STARTS HERE #####
+        # TODO Extract the locations of all objects in the map
         pass
 
-        # TODO use those points to inialize the ICP using the setMapPoints method
+        # TODO use those points to inialize the ICP using the set_map_points method
         pass
+        ##### YOUR CODE ENDS HERE   #####
 
 
-    def mapCallback(self, msg: OccupancyGrid) -> None:
+    def map_callback(self, msg: OccupancyGrid) -> None:
+        '''
+        Save the map and use it to initialize the ICP map points
+        '''
         with self.lock:
             self.ogm = OccupancyGridMap(msg)
-            self.initalizeICP(msg)
+            self.initalize_icp(msg)
 
 
-    def publishMapOdomTF(self, time: rospy.Time) -> None:
-        # Update the transform self.tf_map_odom
-        # TODO fill in the current time
+    def publish_map_odom_tf(self, time: rospy.Time) -> None:
+        '''
+        Update the current transform from the map to odom frames stored in self.tf_map_odom
+        '''
+        ##### YOUR CODE STARTS HERE #####
+        # TODO Fill in the current time
         pass
 
-        # TODO fill in the current transform (using the x, y, theta in self.pose)
+        # TODO Fill in the current transform (using the x, y, theta in self.pose)
         pass
+        ##### YOUR CODE ENDS HERE   #####
 
         # Publish the transform
         self.tf_broadcaster.sendTransform(self.tf_map_odom)
 
 
-    def scanCallback(self, msg: LaserScan) -> None:
-        # Convert lidar points to (x,y)
-        # TODO use the data in the laser scan to find the (x,y) coordinate of each lidar hit in the lidar coordinate frame
-        # NOTE you should only keep points that are between the minimum and maximum range
+    def scan_callback(self, msg: LaserScan) -> None:
+        '''
+        Process the lidar scan and use ICP to perform localization
+        '''
+        ##### YOUR CODE STARTS HERE #####
+        # TODO Convert lidar all points to (x,y)
+        # NOTE You should only keep points that are between the minimum and maximum range
         pass
 
-        # Lookup transformation from odom to lidar coordiante frame
-        # TODO use the lookupTransform method to find this transformation
+        # TODO Lookup transformation from odom to lidar coordiante frame
         pass
 
-        # TODO use the transformation to transform the lidar points into the odom coordinate frame
+        # TODO Use the transformation to transform the lidar points into the odom coordinate frame
         pass
 
-        # Use ICP to find pose of odom with respect to the map
+        # TODO Use ICP to find pose of odom with respect to the map
         with self.lock:
-            # TODO call the ICP function to get the transformation
+            # NOTE need to do this inside of the lock to ensure correct operation
             pass
 
-        # Update pose from the transformation
-        # TODO use the transformation found from ICP to update self.pose
+        # TODO Update self.pose using the transformation found by ICP
+        pass
+        ##### YOUR CODE ENDS HERE   #####
 
         # Publish transform
-        self.publishMapOdomTF(msg.header.stamp)
-
-
-if __name__ == '__main__':
-    # Initialize objects
-    rospy.init_node('lidar_localization')
-    ll = LidarLocalization()
-    rospy.spin()
+        self.publish_map_odom_tf(msg.header.stamp)

@@ -28,6 +28,6 @@ include_directories(
 ## Install ##
 #############
 catkin_install_python(PROGRAMS
-  nodes/lidar_localization
+  nodes/icp_localization
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

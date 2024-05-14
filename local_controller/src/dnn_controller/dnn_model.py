@@ -95,7 +95,7 @@ def unnormalize_velocities(vel):
     return vel
 
 
-def loadDNNParams(file):
+def load_dnn_params(file):
     params = yaml.load(open(file), Loader=yaml.FullLoader)
 
     assert 'goal_input' in params.keys()

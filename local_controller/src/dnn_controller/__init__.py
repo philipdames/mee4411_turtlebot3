@@ -1,1 +1,1 @@
-from .dnn_controller import DNNNavigationNode
+from dnn_controller import DNNNavigationNode

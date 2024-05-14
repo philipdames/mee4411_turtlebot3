@@ -36,13 +36,8 @@
   <node pkg="turtlebot3_fake" type="turtlebot3_fake_node" name="turtlebot3_fake_node" output="screen" />
 
   <!-- Localization -->
-  <!-- <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster"
-        args="$(arg initial_pose_x) $(arg initial_pose_y) 0 $(arg initial_pose_a) 0 0 /map /odom 100" /> -->
-  <node pkg="lidar_localization" type="lidar_localization" name="lidar_localization" output="screen" >
-    <param name="initial_pose_x"  value="$(arg initial_pose_x)" />
-    <param name="initial_pose_y"  value="$(arg initial_pose_y)" />
-    <param name="initial_pose_a"  value="$(arg initial_pose_a)" />
-  </node>
+  <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster"
+        args="$(arg initial_pose_x) $(arg initial_pose_y) 0 $(arg initial_pose_a) 0 0 /map /odom 100" />
 
   <!-- Robot visualization -->
   <include file="$(find turtlebot3_bringup)/launch/includes/description.launch.xml">

@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+
+import rospy
+from lidar_localization import ICPLocalizationNode
+
+if __name__ == '__main__':
+    # Initialize objects
+    rospy.init_node('icp_localization')
+    ll = ICPLocalizationNode()
+    rospy.spin()

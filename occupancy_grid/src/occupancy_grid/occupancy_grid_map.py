@@ -2,7 +2,7 @@ from nav_msgs.msg import OccupancyGrid
 
 import numpy as np
 
-from map_conversions import MapConversions
+from .map_conversions import MapConversions
 
 
 class OccupancyGridMap(MapConversions):

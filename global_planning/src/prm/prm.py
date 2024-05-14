@@ -9,7 +9,7 @@ import numpy as np
 from scipy.spatial import KDTree
 from tqdm import tqdm
 
-import map_conversions as mc
+from occupancy_grid import MapConversions
 
 Z = 0.0 # z coordinate for the graph display
 ALPHA = 0.25 # alpha value for graph transparency
