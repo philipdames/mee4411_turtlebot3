@@ -12,32 +12,17 @@ import numpy as np
 import threading
 from typing import Tuple, Optional
 
+from tb3_utils import TB3Params
         
 class PurePursuit:
-    def __init__(self):
+    def __init__(self, lookahead, goal_margin, tb3_model, robot_frame_id):
         # initialize parameters
-        self.lookahead   = rospy.get_param('~lookahead', 5.0) # lookahead distance [m]
-        self.rate        = rospy.get_param('~rate', 10.) # rate to run controller [Hz]
-        self.goal_margin = rospy.get_param('~goal_margin', 3.0) # maximum distance to goal before stopping [m]
-            
+        self.lookahead   = lookahead
+        self.goal_margin = goal_margin
+
         # Robot parameters
-        robot_model = rospy.get_param('tb3_model', "")
-        if robot_model == 'burger':
-            self.wheel_seperation = 0.160 # [m]
-            self.turning_radius   = 0.080 # [m]
-            self.robot_radius     = 0.105 # [m]
-            self.v_max            = 0.22 # maximum linear velocity [m/s]
-            self.w_max            = 2.84 # maximum angular velocity [rad/s]
-        elif robot_model == 'waffle' or robot_model == 'waffle_pi':
-            self.wheel_seperation = 0.287 # [m]
-            self.turning_radius   = 0.1435 # [m]
-            self.robot_radius     = 0.220 # [m]
-            self.v_max            = 0.26 # maximum linear velocity [m/s]
-            self.w_max            = 1.82 # maximum angular velocity [rad/s]
-        else:
-            rospy.logerr('Turtlebot3 model %s not defined', robot_model)
-        self.wheel_radius   = 0.033 # [m]
-        self.robot_frame_id = rospy.get_param('~robot_frame_id', 'base_footprint')
+        self.params = TB3Params(tb3_model)
+        self.robot_frame_id = robot_frame_id
 
         # Visualization markers
         # Initialize goal marker message
@@ -66,9 +51,20 @@ class PurePursuit:
         for theta in np.arange(0, 2*np.pi, np.pi/8):
             self.circle_marker.points.append(Point(self.lookahead*np.cos(theta), self.lookahead*np.sin(theta), 0))
         self.circle_marker.points.append(Point(self.lookahead, 0, 0))
-    
 
-    def findClosestPoint(self, path: Path, x: np.array, seg: Optional[int]=-1) -> Tuple[np.array, float, int]:
+
+    def update_goal_marker(self, frame_id: str, goal: np.array, stamp: rospy.Time) -> None:
+        # Update goal marker
+        self.goal_marker.header.frame_id = frame_id
+        self.goal_marker.header.stamp = stamp
+        self.goal_marker.pose.position.x = goal[0]
+        self.goal_marker.pose.position.y = goal[1]
+
+        # Update circle marker
+        self.circle_marker.header.stamp = stamp
+
+
+    def find_closest_point(self, path: Path, x: np.array, seg: Optional[int]=-1) -> Tuple[np.array, float, int]:
         '''
         Find the closest point on the current path to the point x
         Inputs: 
@@ -97,7 +93,7 @@ class PurePursuit:
         return pt_min, dist_min, seg_min
 
 
-    def findGoal(self, path: Path, x: np.array) -> np.array:
+    def find_goal(self, path: Path, x: np.array) -> np.array:
         '''
         Find the goal point to drive the robot towards
         Inputs: 
@@ -107,7 +103,7 @@ class PurePursuit:
           goal = numpy array with 2 elements (x and y position of goal)
         '''
         # Find the closest point
-        (pt, dist, seg) = self.findClosestPoint(path, x)
+        (pt, dist, seg) = self.find_closest_point(path, x)
         if np.isnan(pt).any():
             raise Exception('No valid point found')
 
@@ -129,9 +125,9 @@ class PurePursuit:
             ##### YOUR CODE ENDS HERE #####
             
         return goal
-    
 
-    def calculateVelocity(self, goal: np.array) -> Tuple[float, float]:
+
+    def calculate_velocity(self, goal: np.array) -> Tuple[float, float]:
         '''
         Calculate the velocity of the robot. If the goal is closer than goal_margin, then set velocity to 0.
         Inputs: 

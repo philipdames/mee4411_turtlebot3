@@ -11,29 +11,37 @@ import numpy as np
 import threading
 
 from pure_pursuit import PurePursuit
+from transform2d_utils import lookup_transform
 
 
 class PurePursuitNode(PurePursuit):
-    
+
     # Constructor
     def __init__(self):
+        # ROS parameters
+        lookahead   = rospy.get_param('~lookahead', 5.0) # lookahead distance [m]
+        goal_margin = rospy.get_param('~goal_margin', 3.0) # maximum distance to goal before stopping [m]
+        robot_model = rospy.get_param('tb3_model', '')
+        robot_frame_id = rospy.get_param('~robot_frame_id', 'base_footprint')
+
         # Initialize PurePursuit object
-        super(PurePursuitNode, self).__init__()
+        super(PurePursuitNode, self).__init__(lookahead, goal_margin, robot_model, robot_frame_id)
 
         # Initialize ROS objects
-        self.path_sub     = rospy.Subscriber('path', Path, self.pathCallback) # subscriber to get the global path
+        self.path_sub     = rospy.Subscriber('path', Path, self.path_callback) # subscriber to get the global path
         self.tfBuffer     = tf2_ros.Buffer()
         self.tfListener   = tf2_ros.TransformListener(self.tfBuffer) # tf listener to get the pose of the robot
         self.goal_vis_pub = rospy.Publisher('controller_marker', MarkerArray, queue_size=1, latch=True)
         self.cmd_vel_pub  = rospy.Publisher('cmd_vel', Twist, queue_size=10) # publisher to send the velocity commands
         self.timer = None # timer to compute velocity commands
-        
+
         # Initialize data
+        self.rate = rospy.get_param('~rate', 10.) # rate to run controller [Hz]
         self.path = None # store the path to the goal
         self.lock = threading.Lock() # lock to keep data thread safe
     
 
-    def pathCallback(self, msg: Path) -> None:
+    def path_callback(self, msg: Path) -> None:
         '''
         Callback function for the path subscriber
         '''
@@ -51,49 +59,33 @@ class PurePursuitNode(PurePursuit):
         Start the timer that calculates command velocities
         '''
         # initialize timer for controller update
-        self.timer = rospy.Timer(rospy.Duration(1./self.rate), self.timerCallback)
-    
-
-    def getCurrentPose(self):
-        '''
-        Get the current pose of the robot from the tf tree
-        '''
-        try:
-            with self.lock:
-                trans = self.tfBuffer.lookup_transform(self.path.header.frame_id, self.robot_frame_id, rospy.Time(0))
-        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-            raise
-        x = np.array([trans.transform.translation.x, trans.transform.translation.y])
-        theta = 2.0 * np.arctan2(trans.transform.rotation.z, trans.transform.rotation.w)
-        rospy.logdebug("x = {}, y = {}, theta = {}".format(x[0], x[1], theta))
-        
-        return (x, theta)
+        self.timer = rospy.Timer(rospy.Duration(1./self.rate), self.timer_callback)
 
 
-    def timerCallback(self, event) -> None:
+    def timer_callback(self, event) -> None:
         '''
         Runs every time the timer finishes to ensure that velocity commands are sent regularly
         '''
         try:
             # Get current pose
-            (x, theta) = self.getCurrentPose()
+            (x, y, theta) = lookup_transform(self.tfBuffer, self.path.header.frame_id, self.robot_frame_id, rospy.Time.now(), format='xyt')
 
             # Find the goal point
             with self.lock:
-                goal = self.findGoal(self.path, x)
-            self.publishPurePursuitMarkers(goal)
+                goal = self.findGoal(self.path, np.array((x,y)))
+            self.publish_pure_pursuit_markers(goal)
         except Exception as error:
             rospy.logerr(f'Cannot find goal: {error}')
             return
-        
+
         ##### YOUR CODE STARTS HERE #####
         # TODO transform goal to local coordinates
         pass
         ##### YOUR CODE ENDS HERE #####
-        
+
         # Calculate the goal velocity of the robot and send the command
         cmd_vel = Twist()
-        (cmd_vel.linear.x, cmd_vel.angular.z) = self.calculateVelocity(goal)
+        (cmd_vel.linear.x, cmd_vel.angular.z) = self.calculate_velocity(goal)
         if not np.isnan(cmd_vel.linear.x) and not np.isnan(cmd_vel.angular.z): # ensure data is valid
             self.cmd_vel_pub.publish(cmd_vel)
 
@@ -103,26 +95,15 @@ class PurePursuitNode(PurePursuit):
             self.timer = None
 
 
-    def publishPurePursuitMarkers(self, goal):
+    def publish_pure_pursuit_markers(self, goal) -> None:
+        '''
+        Publish markers showing the controller goal
+        '''
+        # Update markers
+        self.update_goal_marker(self.path.header.frame_id, goal, rospy.Time.now())
+
+        # Create and publish marker array
         ma = MarkerArray()
-
-        # Update goal marker
-        self.goal_marker.header.frame_id = self.path.header.frame_id
-        self.goal_marker.header.stamp = rospy.Time.now()
-        self.goal_marker.pose.position.x = goal[0]
-        self.goal_marker.pose.position.y = goal[1]
         ma.markers.append(self.goal_marker)
-        
-        # Update circle marker
-        self.circle_marker.header.stamp = rospy.Time.now()
-        ma.markers.append(self.circle_marker)
-
-        # Publish markers
+        ma.markers.append(self.goal_marker)
         self.goal_vis_pub.publish(ma)    
-
-
-if __name__ == '__main__':
-    rospy.init_node('pure_pursuit')
-    pp = PurePursuitNode()
-    rospy.spin()
-

@@ -1,4 +1,0 @@
-<launch>
-  <param name="tb3_model" value="burger" />
-  <test test-name="pure_pursuit" pkg="pure_pursuit" type="test_pure_pursuit.py"/>
-</launch>

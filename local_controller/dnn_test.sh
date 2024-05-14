@@ -2,7 +2,7 @@
 
 # define a base directory for the experiment
 DL_EXP=`pwd`;
-DL_SCRIPTS="$DL_EXP/src/pure_pursuit";
+DL_SCRIPTS="$DL_EXP/src/dnn_controller";
 DL_OUT="$DL_EXP/output";
 
 # define parameter file

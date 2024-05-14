@@ -26,7 +26,7 @@ def set_seed(seed):
     os.environ['PYTHONHASHSEED'] = str(seed)
 
 
-def isPowerOfTwo(n):
+def is_power_of_two(n):
     return (np.ceil(np.log2(n)) == np.floor(np.log2(n)))
 
 
@@ -102,7 +102,7 @@ def loadDNNParams(file):
     assert params['goal_input'] in ['final_goal', 'sub_goal']
 
     assert 'num_channels' in params.keys()
-    assert isinstance(params['num_channels'], int) and (params['num_channels'] >= 4) and isPowerOfTwo(params['num_channels'])
+    assert isinstance(params['num_channels'], int) and (params['num_channels'] >= 4) and is_power_of_two(params['num_channels'])
     
     assert 'normalization_method' in params.keys()
     assert params['normalization_method'] in ['standardization', 'min_max']
@@ -111,7 +111,7 @@ def loadDNNParams(file):
     assert isinstance(params['num_epochs'], int) and (params['num_epochs'] > 0)
 
     assert 'batch_size' in params.keys()
-    assert isinstance(params['batch_size'], int) and (0 < params['batch_size'] < 5000) and isPowerOfTwo(params['batch_size'])
+    assert isinstance(params['batch_size'], int) and (0 < params['batch_size'] < 5000) and is_power_of_two(params['batch_size'])
 
     assert 'loss_function' in params.keys()
     assert params['loss_function'] in ['MAE', 'MSE']

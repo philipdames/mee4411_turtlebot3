@@ -8,7 +8,7 @@ from typing import Tuple
 
 # ros:
 import rospy
-import tf
+import tf2_ros
 
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Path
@@ -16,9 +16,11 @@ from sensor_msgs.msg import LaserScan
 from visualization_msgs.msg import MarkerArray
 
 # DNN model
-from dnn_model import loadDNNParams, DnnNet, set_seed
+from dnn_model import load_dnn_params, DnnNet, set_seed
 from dnn_model import normalize_scan, normalize_sub_goal, normalize_final_goal, unnormalize_velocities
+
 from pure_pursuit import PurePursuit
+from transform2d_utils import lookup_transform
 
 # do not modify
 seed = 1337
@@ -29,14 +31,20 @@ set_seed(seed)
 # the main program starts here
 #
 #------------------------------------------------------------------------------
-class DNNNavigation(PurePursuit):
+class DNNNavigationNode(PurePursuit):
     # Constructor
     def __init__(self):
+        # ROS Parameters
+        lookahead   = rospy.get_param('~lookahead', 5.0) # lookahead distance [m]
+        goal_margin = rospy.get_param('~goal_margin', 3.0) # maximum distance to goal before stopping [m]
+        robot_model = rospy.get_param('tb3_model', '')
+        robot_frame_id = rospy.get_param('~robot_frame_id', 'base_footprint')
+
         # Initialize PurePursuit object
-        super(DNNNavigation, self).__init__()
+        super(DNNNavigationNode, self).__init__(lookahead, goal_margin, robot_model, robot_frame_id)
 
         # Initialize data:
-        self.params = loadDNNParams(rospy.get_param('~param_file'))
+        self.params = load_dnn_params(rospy.get_param('~param_file'))
 
         # Data from subscribers
         self.scan_lidar = None
@@ -76,9 +84,9 @@ class DNNNavigation(PurePursuit):
         self.rate = rospy.get_param('~rate', 5.0)
 
         # Initialize ROS objects
-        self.path_sub     = rospy.Subscriber('path', Path, self.pathCallback)
-        self.scan_sub     = rospy.Subscriber('scan', LaserScan, self.scanCallback)
-        self.tf_listener  = tf.TransformListener()
+        self.path_sub     = rospy.Subscriber('path', Path, self.path_callback)
+        self.scan_sub     = rospy.Subscriber('scan', LaserScan, self.scan_callback)
+        self.tfBuffer     = tf2_ros.Buffer()
         self.cmd_vel_pub  = rospy.Publisher('cmd_vel', Twist, queue_size=1, latch=False)
         self.goal_vis_pub = rospy.Publisher('controller_marker', MarkerArray, queue_size=1, latch=True)
 
@@ -92,7 +100,7 @@ class DNNNavigation(PurePursuit):
         return is_ready
 
 
-    def scanCallback(self, msg: LaserScan) -> None:
+    def scan_callback(self, msg: LaserScan) -> None:
         '''
         Callback function for the lidar data
         '''
@@ -107,7 +115,7 @@ class DNNNavigation(PurePursuit):
             self.start()
 
 
-    def pathCallback(self, msg: Path) -> None:
+    def path_callback(self, msg: Path) -> None:
         '''
         Callback function for the path data
         '''
@@ -120,59 +128,36 @@ class DNNNavigation(PurePursuit):
             self.start()
 
 
-    def getCurrentPose(self) -> Tuple[np.array, float]:
-        '''
-        Look up the current robot pose
-        '''
-        # look up the current pose of the base_footprint using the tf tree
-        try:
-            trans, rot = self.tf_listener.lookupTransform(self.path.header.frame_id, self.robot_frame_id, rospy.Time(0))
-        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-            raise
-        x = np.array([trans[0], trans[1]])
-        _, _, theta = tf.transformations.euler_from_quaternion(rot)
-        rospy.logdebug("x = {}, y = {}, theta = {}".format(x[0], x[1], theta))
-
-        return (x, theta)
-
-
     def start(self) -> None:
         '''
         Start the timer that calculates command velocities
         '''
         # initialize timer for controller update
-        self.timer = rospy.Timer(rospy.Duration(1./self.rate), self.timerCallback)
-    
-    
-    def publishPurePursuitMarkers(self, goal: np.array) -> None:
+        self.timer = rospy.Timer(rospy.Duration(1./self.rate), self.timer_callback)
+
+
+    def publish_pure_pursuit_markers(self, goal) -> None:
         '''
         Publish markers showing the controller goal
         '''
+        # Update markers
+        self.update_goal_marker(self.path.header.frame_id, goal, rospy.Time.now())
+
+        # Create and publish marker array
         ma = MarkerArray()
-
-        # Update goal marker
-        self.goal_marker.header.frame_id = self.path.header.frame_id
-        self.goal_marker.header.stamp = rospy.Time.now()
-        self.goal_marker.pose.position.x = goal[0]
-        self.goal_marker.pose.position.y = goal[1]
         ma.markers.append(self.goal_marker)
-
-        # Update circle marker
-        self.circle_marker.header.stamp = rospy.Time.now()
-        ma.markers.append(self.circle_marker)
-
-        # Publish markers
+        ma.markers.append(self.goal_marker)
         self.goal_vis_pub.publish(ma)
 
 
-    def timerCallback(self, event) -> None:
+    def timer_callback(self, event) -> None:
         '''
         Function that runs every time the timer finishes to ensure that controller data are sent regularly
         '''
         with self.lock:
             scan = np.copy(self.scan_data)
             try:
-                x, theta = self.getCurrentPose()
+                (x, y, theta) = lookup_transform(self.tfBuffer, self.path.header.frame_id, self.robot_frame_id, rospy.Time.now(), format='xyt')
             except Exception as error:
                 rospy.logerr(f'Cannot find goal: {error}')
                 return
@@ -183,7 +168,7 @@ class DNNNavigation(PurePursuit):
             final_goal = np.array([self.path.poses[-1].pose.position.x, self.path.poses[-1].pose.position.y])
         
         # Publish goal marker
-        self.publishPurePursuitMarkers(sub_goal if self.params['goal_input'] == 'sub_goal' else final_goal)
+        self.publish_pure_pursuit_markers(sub_goal if self.params['goal_input'] == 'sub_goal' else final_goal)
 
         # Put into local coordinate frame
         if self.params['goal_input'] == 'sub_goal':
@@ -201,7 +186,7 @@ class DNNNavigation(PurePursuit):
         else:
             # dnn inference:
             try:
-                vx, wz = self.dnnInference(scan, sub_goal if self.params['goal_input'] == 'sub_goal' else final_goal)
+                vx, wz = self.dnn_inference(scan, sub_goal if self.params['goal_input'] == 'sub_goal' else final_goal)
             except:
                 return
             # calculate the goal velocity of the robot and send the command
@@ -223,7 +208,7 @@ class DNNNavigation(PurePursuit):
             self.timer = None
 
 
-    def dnnInference(self, scan: np.array, goal: np.array) -> Tuple[float, float]:
+    def dnn_inference(self, scan: np.array, goal: np.array) -> Tuple[float, float]:
         '''
         Use the DNN to calculate the velocity commands
         '''
@@ -246,12 +231,3 @@ class DNNNavigation(PurePursuit):
         vx, wz = unnormalize_velocities(vel_cmd.data.cpu().numpy().flatten())
         
         return vx, wz
-
-
-# begin gracefully
-if __name__ == '__main__':
-    rospy.init_node('dnn_navigation')
-    drl_infe = DNNNavigation()
-    rospy.spin()
-
-# end of file

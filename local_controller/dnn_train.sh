@@ -4,7 +4,7 @@
 DL_EXP=`pwd`;
 
 # scripts files
-DL_SCRIPTS="$DL_EXP/src/pure_pursuit";
+DL_SCRIPTS="$DL_EXP/src/dnn_controller";
 
 # output directory
 DL_OUT="$DL_EXP/output";
