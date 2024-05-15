@@ -37,23 +37,38 @@ class PurePursuit:
         self.goal_marker.color.r = 1.0
         self.goal_marker.color.a = 0.5 # set transparency
 
-        # Circle marker
-        self.circle_marker = Marker()
-        self.circle_marker.header.frame_id = self.robot_frame_id
-        self.circle_marker.ns = 'lookahead'
-        self.circle_marker.type = Marker.LINE_STRIP
-        self.circle_marker.action = Marker.ADD
-        self.circle_marker.pose.orientation.w = 1.0
-        self.circle_marker.scale.x = 0.03
-        self.circle_marker.color.r = 1.0
-        self.circle_marker.color.b = 1.0
-        self.circle_marker.color.a = 0.5 # set transparency
+        # Lookahead marker
+        self.lookahead_marker = Marker()
+        self.lookahead_marker.header.frame_id = self.robot_frame_id
+        self.lookahead_marker.ns = 'lookahead'
+        self.lookahead_marker.type = Marker.LINE_STRIP
+        self.lookahead_marker.action = Marker.ADD
+        self.lookahead_marker.pose.orientation.w = 1.0
+        self.lookahead_marker.scale.x = 0.03
+        self.lookahead_marker.color.r = 1.0
+        self.lookahead_marker.color.b = 1.0
+        self.lookahead_marker.color.a = 0.5 # set transparency
         for theta in np.arange(0, 2*np.pi, np.pi/8):
-            self.circle_marker.points.append(Point(self.lookahead*np.cos(theta), self.lookahead*np.sin(theta), 0))
-        self.circle_marker.points.append(Point(self.lookahead, 0, 0))
+            self.lookahead_marker.points.append(Point(self.lookahead*np.cos(theta), self.lookahead*np.sin(theta), 0))
+        self.lookahead_marker.points.append(Point(self.lookahead, 0, 0))
+
+        # Goal marker
+        self.margin_marker = Marker()
+        self.margin_marker.header.frame_id = self.robot_frame_id
+        self.margin_marker.ns = 'goal_margin'
+        self.margin_marker.type = Marker.LINE_STRIP
+        self.margin_marker.action = Marker.ADD
+        self.margin_marker.pose.orientation.w = 1.0
+        self.margin_marker.scale.x = 0.03
+        self.margin_marker.color.r = 1.0
+        self.margin_marker.color.b = 0.0
+        self.margin_marker.color.a = 0.5 # set transparency
+        for theta in np.arange(0, 2*np.pi, np.pi/8):
+            self.margin_marker.points.append(Point(self.goal_margin*np.cos(theta), self.goal_margin*np.sin(theta), 0))
+        self.margin_marker.points.append(Point(self.goal_margin, 0, 0))
 
 
-    def update_goal_marker(self, frame_id: str, goal: np.array, stamp: rospy.Time) -> None:
+    def update_markers(self, frame_id: str, goal: np.array, stamp: rospy.Time) -> None:
         # Update goal marker
         self.goal_marker.header.frame_id = frame_id
         self.goal_marker.header.stamp = stamp
@@ -61,7 +76,8 @@ class PurePursuit:
         self.goal_marker.pose.position.y = goal[1]
 
         # Update circle marker
-        self.circle_marker.header.stamp = stamp
+        self.lookahead_marker.header.stamp = stamp
+        self.margin_marker.header.stamp = stamp
 
 
     def find_closest_point(self, path: Path, x: np.array, seg: Optional[int]=-1) -> Tuple[np.array, float, int]:

@@ -27,6 +27,7 @@ class MapICP:
             pts: 2xN numpy.ndarray of points
         Returns:
             T: 3x3 homogeneous transformation matrix that maps pts on to map_pts
+            error: average distance between points in the match
         '''
         # Ensure points of the correct dimension
         assert pts.shape[0] == 2
@@ -36,36 +37,30 @@ class MapICP:
         distances = distances.ravel() # make 1D arrays
         indices = indices.ravel()
 
-        # Extract corresponding points from self.map_pts and store in the variable map
-        # TODO fill this in using the indices
+        ##### YOUR CODE STARTS HERE #####
+        # TODO Extract corresponding points from self.map_pts and store in the variable map
         map = pts
         
         # Check to make sure you have the same number of points
         assert pts.shape == map.shape
 
-        # Translate point sets (pts, map) to their centroids
-        # TODO find the centroid of each set of points
+        # TODO Translate point sets (pts, map) to their centroids
         pass
         
-        # TODO center each set of points by subtracting the mean
+        # TODO Use the SVD to find the rotation matrix using the np.linalg.svd function
+        pass
+        
+        # TODO Make sure det(R) > 0, if not, multiply the last column of Vt by -1 and recalculate R
         pass
 
-        # Use the SVD to find the rotation matrix
-        # TODO use the np.linalg.svd function
+        # TODO Find the translation vector using the formula to calculate the translation vector
         pass
         
-        # Special reflection case
-        # TODO make sure det(R) > 0, if not, multiply the last column of Vt by -1 and recalculate R
-        pass
-
-        # Find the translation vector
-        # TODO use the formula to calculate the translation vector
-        pass
-        
-        # Fill in the homogeneous transformation
+        # TODO Fill in the homogeneous transformation
         T = np.identity(3)
-
-        return T, distances
+        ##### YOUR CODE ENDS HERE   #####
+        error = np.mean(distances)
+        return T, error
 
 
     def icp(self, pts: np.ndarray, init_pose: Optional[Union[np.array, None]]=None, max_iterations: Optional[int]=20, tolerance: Optional[float]=0.05) -> Tuple[np.ndarray, np.array, int]:
@@ -87,29 +82,32 @@ class MapICP:
 
         # Initialize the transformation
         T = np.eye(3) # initialize identity transformation
-        # TODO see if there an initial pose estimate, if so then fill it in
+
+        ##### YOUR CODE STARTS HERE #####
+        # TODO See if there an initial pose estimate, if so then fill it in
         pass
 
-        # Apply the initial pose estimate
-        # TODO apply the initial pose estimate to the points (pts)
+        # TODO Apply the initial pose estimate to the points (pts)
+        pass
+
+        # TODO Apply the initial pose estimate
         pass
 
         # Run ICP
         prev_error = 1e6 # initialize to a large number
         for i in range(max_iterations):
-            # Compute the transformation between the current source and nearest destination points
-            # TODO replace the input to the nearest neighbor function with the transformed pts
-            T_delta, distances = self.best_fit_transform(pts)
-
-            # Update the current estimate
-            # TODO update the point locations and the transformation (T) using T_delta
+            # TODO Compute the transformation between the current source and nearest destination points
             pass
+            error = 0 # TODO replace this with the output of best_fit_transform
+            
+            # TODO Update the current estimated transofmration and point locations using T_delta
+            pass
+            ##### YOUR CODE ENDS HERE   #####
 
             # Check error
-            mean_error = np.mean(distances)
-            if np.abs(prev_error - mean_error) < tolerance:
+            if np.abs(prev_error - error) < tolerance:
                 break
-            prev_error = mean_error
+            prev_error = error
 
         # Return
-        return T, mean_error, i
+        return T, error, i

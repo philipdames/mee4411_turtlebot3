@@ -72,7 +72,7 @@ class PurePursuitNode(PurePursuit):
 
             # Find the goal point
             with self.lock:
-                goal = self.findGoal(self.path, np.array((x,y)))
+                goal = self.find_goal(self.path, np.array((x,y)))
             self.publish_pure_pursuit_markers(goal)
         except Exception as error:
             rospy.logerr(f'Cannot find goal: {error}')
@@ -91,6 +91,7 @@ class PurePursuitNode(PurePursuit):
 
         # Stop if near goal
         if np.linalg.norm(goal) < self.goal_margin:
+            rospy.loginfo('PurePursuit: Reached goal')
             self.timer.shutdown()
             self.timer = None
 
@@ -100,10 +101,11 @@ class PurePursuitNode(PurePursuit):
         Publish markers showing the controller goal
         '''
         # Update markers
-        self.update_goal_marker(self.path.header.frame_id, goal, rospy.Time.now())
+        self.update_markers(self.path.header.frame_id, goal, rospy.Time.now())
 
         # Create and publish marker array
         ma = MarkerArray()
         ma.markers.append(self.goal_marker)
-        ma.markers.append(self.goal_marker)
+        ma.markers.append(self.lookahead_marker)
+        ma.markers.append(self.margin_marker)
         self.goal_vis_pub.publish(ma)    

@@ -1,3 +1,4 @@
+import rospy
 from nav_msgs.msg import OccupancyGrid
 
 import numpy as np
@@ -11,13 +12,13 @@ class OccupancyGridMap(MapConversions):
         # Set coordinate frame ID
         self.frame_id = frame_id
         # Initialize empty data array (2D array holding values)
-        #   In the range [0, 1], representing the probability of occupancy
+        #   In the range [0, 100], representing the probability of occupancy
         #   If a cell is unknown, set to -1
         self.data = np.zeros(self.array_shape)
 
 
     @classmethod
-    def from_occupancy_grid_msg(cls, msg: OccupancyGrid):
+    def from_msg(cls, msg: OccupancyGrid):
         '''
         Create an object from an OccupancyGrid msg
         '''
@@ -35,7 +36,6 @@ class OccupancyGridMap(MapConversions):
         # TODO Update data array in ogm, based on conventions in the __init__ method
         pass
         ##### YOUR CODE ENDS HERE   #####
-
         return ogm
 
 
@@ -51,7 +51,7 @@ class OccupancyGridMap(MapConversions):
         ##### YOUR CODE ENDS HERE   #####
 
 
-    def to_occupancy_grid_msg(self) -> OccupancyGrid:
+    def to_msg(self) -> OccupancyGrid:
         '''
         Convert the OccupancyGridMap object into an OccupancyGrid ROS message
         Inputs:

@@ -47,7 +47,7 @@ class ICPLocalizationNode:
             self.map_client = rospy.ServiceProxy('static_map', GetMap)
             rospy.sleep(0.1) # pause to let the service start up
             res = self.map_client()
-            self.ogm = OccupancyGridMap(res.map)
+            self.ogm = OccupancyGridMap.from_msg(res.map)
             self.initalize_icp(res.map)
 
         # TF information

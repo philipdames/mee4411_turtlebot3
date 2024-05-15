@@ -5,6 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
+        - /PRM1
       Splitter Ratio: 0.6029411554336548
     Tree Height: 410
   - Class: rviz/Selection
@@ -259,7 +260,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /global_planning/graph
+      Marker Topic: /prm_planner/graph
       Name: PRM
       Namespaces:
         {}
@@ -361,5 +362,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1284
-  X: 390
-  Y: 142
+  X: 326
+  Y: 78

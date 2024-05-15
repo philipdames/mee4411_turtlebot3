@@ -15,7 +15,7 @@ normalization_method: 'standardization'
 num_epochs: 100
 
 # Choose number of samples in a training batch
-#   options: power of two, 0 < BATCH_SIZE < 2500
+#   options: power of two, 0 < BATCH_SIZE <= 1024
 batch_size: 2
 
 # Choose loss function

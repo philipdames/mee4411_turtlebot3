@@ -44,7 +44,7 @@ class DNNNavigationNode(PurePursuit):
         super(DNNNavigationNode, self).__init__(lookahead, goal_margin, robot_model, robot_frame_id)
 
         # Initialize data:
-        self.params = load_dnn_params(rospy.get_param('~param_file'))
+        self.dnn_params = load_dnn_params(rospy.get_param('~param_file'))
 
         # Data from subscribers
         self.scan_lidar = None
@@ -69,7 +69,7 @@ class DNNNavigationNode(PurePursuit):
         assert rospy.has_param('~model_file')
         model_file = rospy.get_param('~model_file')
         self.model = DnnNet(in_channels=1, 
-                            num_hiddens=self.params['num_channels'])
+                            num_hiddens=self.dnn_params['num_channels'])
         # moves the model to the device
         self.model.to(self.device)
         # load the weights
@@ -87,6 +87,7 @@ class DNNNavigationNode(PurePursuit):
         self.path_sub     = rospy.Subscriber('path', Path, self.path_callback)
         self.scan_sub     = rospy.Subscriber('scan', LaserScan, self.scan_callback)
         self.tfBuffer     = tf2_ros.Buffer()
+        self.tfListener   = tf2_ros.TransformListener(self.tfBuffer) # tf listener to get the pose of the robot
         self.cmd_vel_pub  = rospy.Publisher('cmd_vel', Twist, queue_size=1, latch=False)
         self.goal_vis_pub = rospy.Publisher('controller_marker', MarkerArray, queue_size=1, latch=True)
 
@@ -141,12 +142,13 @@ class DNNNavigationNode(PurePursuit):
         Publish markers showing the controller goal
         '''
         # Update markers
-        self.update_goal_marker(self.path.header.frame_id, goal, rospy.Time.now())
+        self.update_markers(self.path.header.frame_id, goal, rospy.Time.now())
 
         # Create and publish marker array
         ma = MarkerArray()
         ma.markers.append(self.goal_marker)
-        ma.markers.append(self.goal_marker)
+        ma.markers.append(self.lookahead_marker)
+        ma.markers.append(self.margin_marker)
         self.goal_vis_pub.publish(ma)
 
 
@@ -157,24 +159,24 @@ class DNNNavigationNode(PurePursuit):
         with self.lock:
             scan = np.copy(self.scan_data)
             try:
-                (x, y, theta) = lookup_transform(self.tfBuffer, self.path.header.frame_id, self.robot_frame_id, rospy.Time.now(), format='xyt')
+                x, y, theta = lookup_transform(self.tfBuffer, self.path.header.frame_id, self.robot_frame_id, rospy.Time.now(), format='xyt')
             except Exception as error:
                 rospy.logerr(f'Cannot find goal: {error}')
                 return
-            if self.params['goal_input'] == 'sub_goal':
-                sub_goal = self.findGoal(self.path, x)
+            current_position = np.array((x,y))
+            if self.dnn_params['goal_input'] == 'sub_goal':
+                sub_goal = self.find_goal(self.path, current_position)
             else:
                 sub_goal = None
             final_goal = np.array([self.path.poses[-1].pose.position.x, self.path.poses[-1].pose.position.y])
         
         # Publish goal marker
-        self.publish_pure_pursuit_markers(sub_goal if self.params['goal_input'] == 'sub_goal' else final_goal)
+        self.publish_pure_pursuit_markers(sub_goal if self.dnn_params['goal_input'] == 'sub_goal' else final_goal)
 
         # Put into local coordinate frame
-        if self.params['goal_input'] == 'sub_goal':
-            sub_goal   = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]]).dot(sub_goal - x)
-        else:
-            final_goal = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]]).dot(final_goal - x)   
+        if self.dnn_params['goal_input'] == 'sub_goal':
+            sub_goal   = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]]).dot(sub_goal - current_position)
+        final_goal = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]]).dot(final_goal - current_position)
 
         # Set velocity command
         cmd_vel = Twist()
@@ -186,7 +188,7 @@ class DNNNavigationNode(PurePursuit):
         else:
             # dnn inference:
             try:
-                vx, wz = self.dnn_inference(scan, sub_goal if self.params['goal_input'] == 'sub_goal' else final_goal)
+                vx, wz = self.dnn_inference(scan, sub_goal if self.dnn_params['goal_input'] == 'sub_goal' else final_goal)
             except:
                 return
             # calculate the goal velocity of the robot and send the command
@@ -213,11 +215,11 @@ class DNNNavigationNode(PurePursuit):
         Use the DNN to calculate the velocity commands
         '''
         # normalize input data:
-        scan = normalize_scan(scan, self.params['normalization_method'])
-        if self.params['goal_input'] == 'sub_goal':
-            goal = normalize_sub_goal(goal, self.params['normalization_method'])
+        scan = normalize_scan(scan, self.dnn_params['normalization_method'])
+        if self.dnn_params['goal_input'] == 'sub_goal':
+            goal = normalize_sub_goal(goal, self.dnn_params['normalization_method'])
         else:
-            goal = normalize_final_goal(goal, self.params['normalization_method'])
+            goal = normalize_final_goal(goal, self.dnn_params['normalization_method'])
 
         # switch to torch tensor
         batch_scan = torch.tensor(scan, dtype=torch.float32).to(self.device)  

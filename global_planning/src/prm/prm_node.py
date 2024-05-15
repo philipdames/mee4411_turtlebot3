@@ -92,7 +92,7 @@ class PRMNode:
         img = img.reshape((map.info.height, map.info.width))
         
         # Get robot kernel (i.e., shape)
-        r = np.int8(np.ceil(self.robot_radius / map.info.resolution)) # robot radius in map cells
+        r = np.int8(np.ceil(self.params.robot_radius / map.info.resolution)) # robot radius in map cells
         robot_img = cv.getStructuringElement(cv.MORPH_ELLIPSE, (2*r+1, 2*r+1), (r,r)) # image of robot shape
         
         # Inflate obstacles using dilate function
@@ -106,7 +106,7 @@ class PRMNode:
         self.costmap_pub.publish(map)
 
         # Make PRM
-        self.prm.buildRoadmap(OccupancyGridMap.from_occupancy_grid_msg(map))
+        self.prm.build_roadmap(OccupancyGridMap.from_msg(map))
 
 
     def map_callback(self, msg: OccupancyGrid) -> None:

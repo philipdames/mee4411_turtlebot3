@@ -2,7 +2,7 @@
 
 # define a base directory for the experiment
 DL_EXP=`pwd`;
-DL_SCRIPTS="$DL_EXP/src/dnn_controller";
+DL_SCRIPTS="$DL_EXP/scripts";
 DL_OUT="$DL_EXP/output";
 
 # define parameter file
@@ -19,7 +19,7 @@ DL_DATA_TEST="$DL_DATA/test";
 # evaluate each data set that was specified
 #
 echo "... starting evaluation of $DL_DATA_EVAL ..."
-$DL_SCRIPTS/dnn_test.py $DL_OUT $DL_PARAM_FILE $DL_MDL_PATH $DL_DATA_TEST | \
+$DL_SCRIPTS/dnn_test $DL_OUT $DL_PARAM_FILE $DL_MDL_PATH $DL_DATA_TEST | \
     tee $DL_OUT/01_decode_train.log | grep "Average"
 echo "... finished evaluation of $DL_DATA_EVAL ..."
 

@@ -16,7 +16,7 @@ class MapConversions:
 
 
     @classmethod
-    def from_occupancy_grid_msg(cls, msg: OccupancyGrid):
+    def from_msg(cls, msg: OccupancyGrid):
         '''
         Create an object from an OccupancyGrid ROS msg
         '''

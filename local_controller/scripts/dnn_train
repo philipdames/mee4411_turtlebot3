@@ -9,7 +9,7 @@ from torch.optim import Adam
 from tensorboardX import SummaryWriter
 
 # import the model
-from .dnn_model import set_seed, load_dnn_params, NavDataset, DnnNet
+from dnn_controller import set_seed, load_dnn_params, NavDataset, DnnNet
 
 # import modules
 import os

@@ -4,7 +4,7 @@
 DL_EXP=`pwd`;
 
 # scripts files
-DL_SCRIPTS="$DL_EXP/src/dnn_controller";
+DL_SCRIPTS="$DL_EXP/scripts";
 
 # output directory
 DL_OUT="$DL_EXP/output";
@@ -28,6 +28,6 @@ DL_DATA_EVAL="$DL_DATA/dev";
 
 # execute training: training must always be run
 echo "... starting training on $DL_DATA_TRAIN ..."
-$DL_SCRIPTS/dnn_train.py $DL_PARAM_FILE $DL_TRAIN_ODIR $DL_DATA_TRAIN $DL_DATA_EVAL | tee $DL_OUT/00_train.log | \
+$DL_SCRIPTS/dnn_train $DL_PARAM_FILE $DL_TRAIN_ODIR $DL_DATA_TRAIN $DL_DATA_EVAL | tee $DL_OUT/00_train.log | \
       grep "reading\|Step\|Average\|Warning\|Error" 
 echo "... finished training on $DL_DATA_TRAIN ..."

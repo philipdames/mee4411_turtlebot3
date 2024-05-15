@@ -5,7 +5,7 @@ import torch
 from tqdm import tqdm
 
 # import the model and all of its variables/functions
-from .dnn_model import load_dnn_params, NavDataset, DnnNet
+from dnn_controller import load_dnn_params, NavDataset, DnnNet
 import numpy as np
 
 # import modules

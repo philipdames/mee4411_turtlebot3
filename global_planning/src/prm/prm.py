@@ -1,7 +1,7 @@
 import rospy
 
-from geometry_msgs.msg import Point
-from nav_msgs.msg import OccupancyGrid, Path
+from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
+from nav_msgs.msg import Path
 from visualization_msgs.msg import Marker, MarkerArray
 
 import networkx as nx
@@ -69,7 +69,7 @@ class PRM:
         self.show()
 
         # Initialize KD tree for quickly finding nearest node
-        pts = np.array(self.graph.nodes.data('location'))
+        pts = np.array([p for _, p in self.graph.nodes.data('location')])
         assert pts.shape[1] == 2
         self.kdtree = KDTree(pts)
 
@@ -113,7 +113,7 @@ class PRM:
         '''
         _, ind = self.kdtree.query(pt, k = 10)
         for i in ind:
-            if self.validEdge(pt, self.graph.nodes[i]['location']):
+            if self.valid_edge(pt, self.graph.nodes[i]['location']):
                 return i
         return None
 
@@ -144,9 +144,9 @@ class PRM:
         # TODO convert the path returned by networkx to a nav_msgs/Path
         # NOTE make sure to include the start and goal points
         pass
-        ##### YOUR CODE ENDS HERE   #####
         
         return Path() # TODO fix this
+        ##### YOUR CODE ENDS HERE   #####
 
 
     def show(self) -> None:
@@ -155,7 +155,7 @@ class PRM:
         
         # Create marker to show the nodes in the graph
         points_marker = Marker()
-        points_marker.header.frame_id = self.map.header.frame_id
+        points_marker.header.frame_id = self.map.frame_id
         points_marker.header.stamp = rospy.Time.now()
         points_marker.ns = 'points'
         points_marker.type = Marker.SPHERE_LIST
@@ -171,7 +171,7 @@ class PRM:
 
         # Create marker to show the edges in the graph
         edges_marker = Marker()
-        edges_marker.header.frame_id = self.map.header.frame_id
+        edges_marker.header.frame_id = self.map.frame_id
         edges_marker.header.stamp = rospy.Time.now()
         edges_marker.ns = 'edges'
         edges_marker.type = Marker.LINE_LIST

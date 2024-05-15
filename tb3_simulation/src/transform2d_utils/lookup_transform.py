@@ -1,6 +1,11 @@
 import rospy
 import tf2_ros
 
+from geometry_msgs.msg import Transform
+
+import numpy as np
+from typing import Optional, Tuple, Union
+
 from .transform2d_utils import transform2homogeneous, transform2xyt
 
 def lookup_transform(tf_buffer: tf2_ros.Buffer, base_frame: str, child_frame: str, stamp: rospy.Time, time_travel: Optional[rospy.Duration]=rospy.Duration(0), format: Optional[str]='transform') -> Union[None, np.ndarray, Transform, Tuple]:
@@ -24,8 +29,8 @@ def lookup_transform(tf_buffer: tf2_ros.Buffer, base_frame: str, child_frame: st
     try:
         trans = tf_buffer.lookup_transform(base_frame, child_frame, stamp - time_travel, rospy.Duration(2.0))
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as error:
-        rospy.logwarn("TF lookup failed: ", error)
-        return None
+        rospy.logwarn(f'TF lookup failed: {error}')
+        raise
     # Return value
     if format == 'transform':
         return trans

@@ -34,13 +34,13 @@
         args="$(arg initial_pose_x) $(arg initial_pose_y) 0 $(arg initial_pose_a) 0 0 /map /$(arg sim_namespace)/odom 100" />
 
   <!-- Laser scanner -->
-  <node pkg="tb3_simulation" name="laser_simulator" type="laser_simulator"
+  <node pkg="laser_simulator" name="laser_simulator" type="laser_simulator"
         output="screen">
     <remap from="~map" to="/map"/>
     <remap from="~odom" to="odom"/>
     <remap from="~scan" to="scan"/>
-    <rosparam file="$(find tb3_simulation)/config/models.yaml"/>
-    <rosparam file="$(find tb3_simulation)/models/LDS_01.yaml"/>
+    <rosparam file="$(find laser_simulator)/config/models.yaml"/>
+    <rosparam file="$(find laser_simulator)/models/LDS_01.yaml"/>
     <param name="frame_id" value="$(arg sim_namespace)/base_scan"/>
     <param name="offset/x" value="0"/>
     <param name="offset/y" value="0"/>
@@ -48,7 +48,7 @@
   </node>
 
   <!-- Republish sensor messages to base workspace -->
-  <node pkg="tb3_simulation" name="sim_repub" type="sim_repub.py" output="screen">
+  <node pkg="tb3_simulation" name="repub_simulated_sensors" type="repub_simulated_sensors" output="screen">
     <remap from="~scan_out" to="/scan"/>
     <remap from="~joint_states_out" to="/joint_states"/>
     <param name="noise_std" value="$(eval radians(joint_noise_std))"/>

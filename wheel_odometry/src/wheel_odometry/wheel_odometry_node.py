@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import rospy
 import tf2_ros
 
@@ -33,8 +31,8 @@ class WheelOdometryNode(TB3Kinematics):
 
         # Odometry message
         self.odom = Odometry()
-        self.odom.header.frame_id = rospy.get_param('odom_frame', 'odom')
-        self.odom.child_frame_id = rospy.get_param('base_frame', 'base_footprint')
+        self.odom.header.frame_id = rospy.get_param('~odom_frame', 'odom')
+        self.odom.child_frame_id = rospy.get_param('~base_frame', 'base_footprint')
         self.odom.pose.covariance = np.diag((0.1, 0.1, 1e6, 1e6, 1e6, 0.2)).flatten().tolist()
         self.odom.twist.covariance = np.diag((0.1, 0.1, 1e6, 1e6, 1e6, 0.2)).flatten().tolist()
         self.pose = [0.0, 0.0, 0.0] # (x, y, theta)
@@ -78,9 +76,8 @@ class WheelOdometryNode(TB3Kinematics):
         # TODO Update odometry message (stored in self.odom) based on new time, pose, and velocity
         pass
         ##### YOUR CODE ENDS HERE   #####
-
         # Publish odometry
-        self.odom_pub_.publish(self.odom)
+        self.odom_pub.publish(self.odom)
     
     
     def update_tf(self) -> None:

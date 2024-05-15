@@ -27,6 +27,8 @@ catkin_package(
 catkin_install_python(PROGRAMS 
   nodes/pure_pursuit
   nodes/dnn_controller
+  scripts/dnn_train
+  scripts/dnn_test
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

@@ -39,6 +39,10 @@
   <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster"
         args="$(arg initial_pose_x) $(arg initial_pose_y) 0 $(arg initial_pose_a) 0 0 /map /odom 100" />
 
+  <!-- Global planning -->
+
+  <!-- Local controller -->
+
   <!-- Robot visualization -->
   <include file="$(find turtlebot3_bringup)/launch/includes/description.launch.xml">
     <arg name="model" value="$(arg model)" />
