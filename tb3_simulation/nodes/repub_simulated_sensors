@@ -61,6 +61,6 @@ class SimRepub:
 
 
 if __name__ == '__main__':
-    rospy.init_node('sim_repub')
+    rospy.init_node('repub_simulated_sensors')
     sr = SimRepub()
     rospy.spin()

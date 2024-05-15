@@ -22,6 +22,7 @@ catkin_package(
 ## Install ##
 #############
 catkin_install_python(PROGRAMS
+  nodes/collision_detection
   nodes/repub_simulated_sensors
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

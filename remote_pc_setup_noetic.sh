@@ -103,6 +103,7 @@ sudo apt install -y \
 print_status "[Install python modules]"
 sudo apt install python3-pip
 pip install \
+  collision \
   networkx \
   numpy==1.17.4 \
   pandas==1.3 \

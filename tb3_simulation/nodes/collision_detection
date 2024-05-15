@@ -1,0 +1,90 @@
+#!/usr/bin/env python3 
+import rospy
+import tf2_ros
+
+from nav_msgs.msg import OccupancyGrid
+from nav_msgs.srv import GetMap
+
+from occupancy_grid import MapConversions
+from tb3_utils import TB3Params
+from transform2d_utils import lookup_transform
+
+from collision import Poly, Vector, collide
+from copy import deepcopy
+import numpy as np
+from scipy.spatial import KDTree
+from threading import Lock
+
+
+class CollisionDetectionNode:
+    def __init__(self) -> None:
+        # TB3 Params
+        self.params = TB3Params(rospy.get_param('tb3_model', ''))
+        self.robot_frame_id = rospy.get_param('~robot_frame_id', 'base_footprint')
+        # Robot polygon
+        self.robot_poly = Poly(Vector(0,0), [Vector(x,y) for x, y in self.params.footprint], 0)
+        self.radius = np.max([np.linalg.norm(np.array(p)) for p in self.params.footprint])
+        # Params
+        self.occupancy_threshold = rospy.get_param('~occupancy_threshold', 50)
+        # TF
+        self.tf_buffer   = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
+        # Map
+        self.map_frame_id = None
+        self.lock = Lock()
+        if rospy.get_param('~use_map_topic', False):
+            rospy.map_sub = rospy.Subscriber('map', OccupancyGrid, self.map_callback, queue_size=1)
+        else:
+            rospy.wait_for_service('static_map')
+            map_client = rospy.ServiceProxy('static_map', GetMap)
+            rospy.sleep(0.1)
+            res = map_client()
+            self.prepare_map(res.map)
+        # Timer
+        rate = rospy.get_param('~rate', 10.)
+        self.timer = rospy.Timer(rospy.Duration(1 / rate), self.timer_callback)
+
+
+    def map_callback(self, msg: OccupancyGrid) -> None:
+        self.prepare_map(msg)
+
+
+    def prepare_map(self, msg: OccupancyGrid) -> None:
+        with self.lock:
+            self.map_frame_id = msg.header.frame_id
+            self.resolution = msg.info.resolution
+            # Find objects in map
+            objs = np.argwhere(np.array(msg.data) > self.occupancy_threshold)
+            mc = MapConversions.from_msg(msg)
+            xx, yy = mc.ind2xy(objs)
+            # Build KD tree
+            self.kdtree = KDTree(np.hstack((xx, yy)))
+            # Build collision polygons
+            v = Vector
+            r = self.resolution/2
+            box = [v(-r,-r), v(-r,r), v(r,r), v(r,-r)]
+            self.map_boxes = [Poly(v(x,y), box) for x, y in zip(xx,yy)]
+            print(self.map_boxes[0])
+
+
+    def timer_callback(self, event):
+        # Get pose
+        x, y, t = lookup_transform(self.tf_buffer, self.map_frame_id, self.robot_frame_id, rospy.Time.now(), format='xyt')
+        # Check for collision
+        with self.lock:
+            # Check for potential collisions
+            ii = self.kdtree.query_ball_point((x, y), self.radius+self.resolution)
+            # Check for collisions with all nearby boxes
+            self.robot_poly.pos.x = x
+            self.robot_poly.pos.y = y
+            self.robot_poly.angle = t
+            for i in ii:
+                if collide(self.robot_poly, self.map_boxes[i]):
+                    rospy.logfatal('Turtlebot collided with something in the map')
+                    rospy.signal_shutdown('Collision with the map')
+
+
+if __name__ == '__main__':
+    rospy.init_node('collision_detection')
+    sr = CollisionDetectionNode()
+    rospy.spin()

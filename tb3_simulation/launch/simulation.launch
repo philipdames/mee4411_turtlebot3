@@ -40,8 +40,12 @@
         args="$(arg initial_pose_x) $(arg initial_pose_y) 0 $(arg initial_pose_a) 0 0 /map /odom 100" />
 
   <!-- Global planning -->
-
+  
   <!-- Local controller -->
+
+  <!-- Collision detection -->
+  <node pkg="tb3_simulation" type="collision_detection" name="collision_detection" 
+        output="screen" required="True" />
 
   <!-- Robot visualization -->
   <include file="$(find turtlebot3_bringup)/launch/includes/description.launch.xml">
